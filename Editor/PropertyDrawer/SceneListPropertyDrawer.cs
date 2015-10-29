@@ -3,14 +3,13 @@ using UnityEditor;
 using UnityEngine;
 using UnityUtils.CustomTypes;
 using System.Collections.Generic;
+using System.Security;
 
 namespace UnityUtils.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(SceneList))]
     public class SceneSelectorPropertyDrawer : PropertyDrawer
     {
-        int value = 0;
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var array = property.FindPropertyRelative("Values");
@@ -27,12 +26,18 @@ namespace UnityUtils.Editor.PropertyDrawers
                 List<string> names = new List<string>();
                 for (var i = 0; i < scenes.Length; ++i)
                 {
-                    if (scenes [i].enabled)
+                    if (scenes[i].enabled)
                     {
-                        var name = scenes [i].path.Substring(scenes [i].path.LastIndexOf("/") + 1);
+                        var name = scenes[i].path.Substring(scenes[i].path.LastIndexOf("/") + 1);
                         name = name.Substring(0, name.Length - 6);
                         names.Add(name);
                     }
+                }
+
+                int value = 0;
+                for (int i = 0; i < array.arraySize; ++i)
+                {
+                    value |= (1 << names.IndexOf(array.GetArrayElementAtIndex(i).stringValue));
                 }
 
                 value = EditorGUI.MaskField(position, label, value, names.ToArray());
@@ -44,13 +49,14 @@ namespace UnityUtils.Editor.PropertyDrawers
                     {
                         array.InsertArrayElementAtIndex(c);
                         var el = array.GetArrayElementAtIndex(c);
-                        el.stringValue = names [i];
+                        el.stringValue = names[i];
                         c++;
                     }
                 }
 
                 EditorGUI.EndProperty();
-            } else
+            }
+            else
             {
                 EditorGUI.PropertyField(position, property, label);
             }
