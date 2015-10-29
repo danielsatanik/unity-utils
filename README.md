@@ -1,1 +1,1 @@
-# Unity3d Utils from Daniel Satanik
+# Unity3d Utils by Daniel Satanik
