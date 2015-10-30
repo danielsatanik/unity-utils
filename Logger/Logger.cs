@@ -38,11 +38,11 @@ namespace UnityUtils.Debugging
 
         protected override void Initialize()
         {
-            Settings = Resources.Load("LoggerSettings") as LoggerSettings;
+            Settings = Resources.Load<LoggerSettings>("LoggerSettings");
             #if DEBUG
             if (Settings == null)
             {
-                UnityEngine.Debug.LogError("Logger Settings object not found. Pleas create it via Unity Utils/Create/Logger Settings and place it under any Resources-folder");
+                UnityEngine.Debug.LogError("Logger Settings object not found. Pleas create it via Unity Utils/Create/Logger Settings");
                 UnityEngine.Debug.Break();
             }
             #endif
@@ -232,12 +232,12 @@ namespace UnityUtils.Debugging
             var myTrace = new StackTrace(true);
             StackFrame myFrame = myTrace.GetFrame(depth);
             string messageInformation = String.Format(
-                                      "Filename: {0}\nNamespace: {1}\nMethod: {2}.{3}\nLine: {4}",
-                                      myFrame.GetFileName(),
-                                      myFrame.GetMethod().DeclaringType.Namespace,
-                                      myFrame.GetMethod().DeclaringType.Name,
-                                      myFrame.GetMethod().ToString().Split(' ')[1],
-                                      myFrame.GetFileLineNumber());
+                                            "Filename: {0}\nNamespace: {1}\nMethod: {2}.{3}\nLine: {4}",
+                                            myFrame.GetFileName(),
+                                            myFrame.GetMethod().DeclaringType.Namespace,
+                                            myFrame.GetMethod().DeclaringType.Name,
+                                            myFrame.GetMethod().ToString().Split(' ')[1],
+                                            myFrame.GetFileLineNumber());
             origMessage = origMessage + "\n" + messageInformation;
             #endif
         }
@@ -269,17 +269,17 @@ namespace UnityUtils.Debugging
                 // Prevent compressing hidden and 
                 // already compressed files.
                 if ((File.GetAttributes(fi.FullName)
-                & FileAttributes.Hidden)
-                != FileAttributes.Hidden & fi.Extension != ".gz")
+                    & FileAttributes.Hidden)
+                    != FileAttributes.Hidden & fi.Extension != ".gz")
                 {
                     string destFileName = fi.FullName.Substring(0, fi.FullName.LastIndexOf('.')) + DateTime.Now.ToString("yyyyMMddHHmmfff") + fi.FullName.Substring(fi.FullName.LastIndexOf('.')) + ".gz";
                     // Create the compressed file.
                     using (FileStream outFile =
-                        File.Create(destFileName))
+                               File.Create(destFileName))
                     {
                         using (var compress =
-                            new GZipStream(outFile,
-                                CompressionMode.Compress))
+                                   new GZipStream(outFile,
+                                       CompressionMode.Compress))
                         {
                             // Copy the source file into 
                             // the compression stream.

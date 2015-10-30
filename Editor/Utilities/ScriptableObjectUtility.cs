@@ -2,7 +2,6 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
-using UnityUtils.Utilities.Extensions;
 
 namespace UnityUtils.Editor.Utilities
 {
@@ -45,6 +44,16 @@ namespace UnityUtils.Editor.Utilities
         {
             var asset = ScriptableObject.CreateInstance<T>();
             ProjectWindowUtil.CreateAsset(asset, "New " + typeof(T).Name + ".asset");
+        }
+
+        public static void ShowAsset<T>(string path) where T : ScriptableObject
+        {
+            var obj =
+                AssetDatabase.LoadAssetAtPath<T>(path + "/" + typeof(T).Name + ".asset") ??
+                CreateAsset<T>(path);
+
+            EditorUtility.FocusProjectWindow();
+            Selection.activeObject = obj;
         }
     }
 }
