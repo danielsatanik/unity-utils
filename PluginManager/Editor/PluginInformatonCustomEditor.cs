@@ -7,6 +7,7 @@ namespace UnityUtils.Manager.Editor
     [CustomEditor(typeof(PluginInformation))]
     public class PluginInformationEditor : UnityEditor.Editor
     {
+        #pragma warning disable 414
         SerializedObject mObject;
         SerializedProperty mVersion;
 
@@ -61,6 +62,7 @@ namespace UnityUtils.Manager.Editor
                 serializedObject.ApplyModifiedProperties();
             #endif
         }
+        #pragma warning restore 414
     }
 }
 #endif
