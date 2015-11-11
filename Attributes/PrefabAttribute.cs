@@ -1,4 +1,4 @@
-﻿namespace UnityUtils.Attribute
+﻿namespace UnityUtils.Attributes
 {
   [System.AttributeUsage(System.AttributeTargets.Class, Inherited = true)]
   public class PrefabAttribute : System.Attribute

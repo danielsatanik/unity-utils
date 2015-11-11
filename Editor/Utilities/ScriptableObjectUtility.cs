@@ -2,17 +2,15 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
+using System;
 
 namespace UnityUtils.Editor.Utilities
 {
     public static class ScriptableObjectUtility
     {
-        /// <summary>
-        //  This makes it easy to create, name and place unique new ScriptableObject asset files.
-        /// </summary>
-        public static T CreateAsset<T>(string path = null) where T : ScriptableObject
+        public static ScriptableObject CreateAsset(Type type, string path = null)
         {
-            T asset = ScriptableObject.CreateInstance<T>();
+            ScriptableObject asset = ScriptableObject.CreateInstance(type);
 
             if (string.IsNullOrEmpty(path))
             {
@@ -26,7 +24,7 @@ namespace UnityUtils.Editor.Utilities
             {
                 Directory.CreateDirectory(path);
             }
-            string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath(path + "/" + typeof(T).Name + ".asset");
+            string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath(path + "/" + type.Name + ".asset");
 
             AssetDatabase.CreateAsset(asset, assetPathAndName);
             AssetDatabase.SaveAssets();
@@ -34,16 +32,23 @@ namespace UnityUtils.Editor.Utilities
             return asset;
         }
 
-        /// <summary>
-        /// Create new asset from <see cref="ScriptableObject"/> type with unique name at
-        /// selected folder in project window. Asset creation can be cancelled by pressing
-        /// escape key when asset is initially being named.
-        /// </summary>
-        /// <typeparam name="T">Type of scriptable object.</typeparam>
-        public static void CreateAssetWithDialog<T>() where T : ScriptableObject
+        public static T CreateAsset<T>(string path = null) where T : ScriptableObject
         {
-            var asset = ScriptableObject.CreateInstance<T>();
-            ProjectWindowUtil.CreateAsset(asset, "New " + typeof(T).Name + ".asset");
+            return CreateAsset(typeof(T), path) as T;
+        }
+
+        public static ScriptableObject CreateAssetSafe(Type type, string path)
+        {
+            var obj =
+                AssetDatabase.LoadAssetAtPath(path + "/" + type.Name + ".asset", type) ??
+                CreateAsset(type, path);
+
+            return obj as ScriptableObject;
+        }
+
+        public static T CreateAssetSafe<T>(string path) where T : ScriptableObject
+        {
+            return CreateAssetSafe(typeof(T), path) as T;
         }
 
         public static void ShowAsset<T>(string path) where T : ScriptableObject

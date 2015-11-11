@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using UnityUtils.Utilities.Extensions;
-using System.Linq;
-using System;
 
 namespace UnityUtils.Debugging
 {
