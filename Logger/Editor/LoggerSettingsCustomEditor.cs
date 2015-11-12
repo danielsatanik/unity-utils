@@ -23,7 +23,7 @@ namespace UnityUtils.Debugging.Editor
         
             EditorGUILayout.PropertyField(serializedObject.FindProperty("CustomPrefix"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("Options"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("ErrorType"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("LogLevel"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("RotateSize"));
             EditorGUILayout.HelpBox("The rotation size is in KB. 0 KB means, never rotate.", MessageType.None);
 

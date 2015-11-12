@@ -16,23 +16,23 @@ namespace UnityUtils.Debugging
     {
         LoggerSettings Settings;
 
-        bool mAddTimeStamp;
-        bool mBreakOnAssert;
-        bool mBreakOnError;
-        bool mEchoToConsole;
+        bool AddTimeStamp { get { return (Settings.Options & LoggerOption.ADD_TIME_STAMP) == LoggerOption.ADD_TIME_STAMP; } }
+
+        bool BreakOnAssert { get { return (Settings.Options & LoggerOption.BREAK_ON_ASSERT) == LoggerOption.BREAK_ON_ASSERT; } }
+
+        bool BreakOnError { get { return (Settings.Options & LoggerOption.BREAK_ON_ERROR) == LoggerOption.BREAK_ON_ERROR; } }
+
+        bool EchoToConsole { get { return (Settings.Options & LoggerOption.ECHO_TO_CONSOLE) == LoggerOption.ECHO_TO_CONSOLE; } }
 
         string mDirectoryRoot;
-        string mCustomLogfilePrefix;
-        uint mLogRotateSize;
+
+        string CustomLogfilePrefix { get { return Settings.CustomPrefix; } }
+
+        uint LogRotateSize { get { return Settings.RotateSize; } }
+
         List<StreamWriter> mOutputstreams;
 
-        LoggerErrorType mLogLevel;
-
-        public static LoggerErrorType LogLevel
-        {
-            get { return Logger.Instance.mLogLevel; }
-            set { Logger.Instance.mLogLevel = value; }
-        }
+        LoggerLogLevel LogLevel { get { return Settings.LogLevel; } }
 
         #region private interface
 
@@ -47,22 +47,12 @@ namespace UnityUtils.Debugging
             }
             #endif
 
-            mLogRotateSize = Settings.RotateSize;
-            mCustomLogfilePrefix = Settings.CustomPrefix;
-
-            mAddTimeStamp = (Settings.Options & LoggerOption.ADD_TIME_STAMP) == LoggerOption.ADD_TIME_STAMP;
-            mBreakOnAssert = (Settings.Options & LoggerOption.BREAK_ON_ASSERT) == LoggerOption.BREAK_ON_ASSERT;
-            mBreakOnError = (Settings.Options & LoggerOption.BREAK_ON_ERROR) == LoggerOption.BREAK_ON_ERROR;
-            mEchoToConsole = (Settings.Options & LoggerOption.ECHO_TO_CONSOLE) == LoggerOption.ECHO_TO_CONSOLE;
-
-            mLogLevel = LoggerErrorType.Trace;
-
             mDirectoryRoot = GetDirectoryRoot();
 
             mOutputstreams = new List<StreamWriter>();
-            foreach (var type in Enum.GetValues(typeof(LoggerErrorType)))
+            foreach (var type in Enum.GetValues(typeof(LoggerLogLevel)))
             {
-                mOutputstreams.Add(File.AppendText(GetLogFileName((LoggerErrorType)type)));
+                mOutputstreams.Add(File.AppendText(GetLogFileName((LoggerLogLevel)type)));
             }
         }
 
@@ -77,7 +67,7 @@ namespace UnityUtils.Debugging
             #endif
         }
 
-        string GetLogFileName(LoggerErrorType type)
+        string GetLogFileName(LoggerLogLevel type)
         {
             #if PROFILE
             const string prefix = "profile";
@@ -86,11 +76,11 @@ namespace UnityUtils.Debugging
             #else
             const string prefix = "";
             #endif
-            string typeName = Enum.GetName(typeof(LoggerErrorType), type);
-            return String.Format("{0}{1}.{2}.{3}.log", mDirectoryRoot, prefix, mCustomLogfilePrefix, typeName.ToLower());
+            string typeName = Enum.GetName(typeof(LoggerLogLevel), type);
+            return String.Format("{0}{1}.{2}.{3}.log", mDirectoryRoot, prefix, CustomLogfilePrefix, typeName.ToLower());
         }
 
-        void LogRotate(LoggerErrorType type)
+        void LogRotate(LoggerLogLevel type)
         {
             string fileName = GetLogFileName(type);
             var logFile = new FileInfo(fileName);
@@ -101,7 +91,7 @@ namespace UnityUtils.Debugging
             }
 
             // 0 size means, do not rotate
-            if (mLogRotateSize > 0 && logFile.Length >= 1024 * mLogRotateSize)
+            if (LogRotateSize > 0 && logFile.Length >= 1024 * LogRotateSize)
             {
                 mOutputstreams[(int)type].Close();
                 Compress(logFile);
@@ -110,10 +100,10 @@ namespace UnityUtils.Debugging
             }
         }
 
-        void Write(LoggerErrorType type, string message)
+        void Write(LoggerLogLevel type, string message)
         {
             message = String.Format("[{0}] {1}", (int)type, message);
-            if (mAddTimeStamp)
+            if (AddTimeStamp)
             {
                 #if UNITY_EDITOR
                 GetStackTraceString(ref message, 4);
@@ -125,23 +115,23 @@ namespace UnityUtils.Debugging
             // use all log files to write message in all "weaker" levels
             for (int i = 0; i < ((int)type) + 1; ++i)
             {
-                LogRotate((LoggerErrorType)i);
+                LogRotate((LoggerLogLevel)i);
                 mOutputstreams[i].WriteLine(message);
                 mOutputstreams[i].Flush();
             }
 
-            if (mEchoToConsole)
+            if (EchoToConsole)
             {
-                if ((int)type >= (int)mLogLevel && (int)type <= (int)LoggerErrorType.Info) // Both Trace and Info go here
+                if ((int)type >= (int)LogLevel && (int)type <= (int)LoggerLogLevel.Info) // Both Trace and Info go here
                     UnityEngine.Debug.Log(message);
-                else if ((int)type >= (int)mLogLevel && type == LoggerErrorType.Warning)
+                else if ((int)type >= (int)LogLevel && type == LoggerLogLevel.Warning)
                     UnityEngine.Debug.LogWarning(message);
-                else if ((int)type >= (int)mLogLevel) // Both Error and Assert go here.
+                else if ((int)type >= (int)LogLevel) // Both Error and Assert go here.
                     UnityEngine.Debug.LogError(message);
             }
         }
 
-        static void WrapWrite(LoggerErrorType type, string message, bool onBreak = false)
+        static void WrapWrite(LoggerLogLevel type, string message, bool onBreak = false)
         {
             if (Logger.Instance != null)
             {
@@ -164,7 +154,7 @@ namespace UnityUtils.Debugging
         {
             #if !FINAL
             message = String.Format(message, list);
-            WrapWrite(LoggerErrorType.Trace, message);
+            WrapWrite(LoggerLogLevel.Trace, message);
             #endif
         }
 
@@ -173,7 +163,7 @@ namespace UnityUtils.Debugging
         {
             #if !FINAL
             message = String.Format(message, list);
-            WrapWrite(LoggerErrorType.Info, message);
+            WrapWrite(LoggerLogLevel.Info, message);
             #endif
         }
 
@@ -182,7 +172,7 @@ namespace UnityUtils.Debugging
         {
             #if !FINAL
             message = String.Format(message, list);
-            WrapWrite(LoggerErrorType.Warning, message);
+            WrapWrite(LoggerLogLevel.Warning, message);
             #endif
         }
 
@@ -191,7 +181,7 @@ namespace UnityUtils.Debugging
         {
             #if !FINAL
             message = String.Format(message, list);
-            WrapWrite(LoggerErrorType.Error, message, Logger.Instance.mBreakOnError);
+            WrapWrite(LoggerLogLevel.Error, message, Logger.Instance.BreakOnError);
             #endif
         }
 
@@ -203,14 +193,14 @@ namespace UnityUtils.Debugging
                 return;
 
             message = String.Format(message, list);
-            WrapWrite(LoggerErrorType.Assert, message);
+            WrapWrite(LoggerLogLevel.Assert, message);
 
             #if UNITY_EDITOR
             var myTrace = new StackTrace(true);
             StackFrame myFrame = myTrace.GetFrame(1);
             GetStackTraceString(ref message, 2);
 
-            if (Logger.Instance.mBreakOnAssert)
+            if (Logger.Instance.BreakOnAssert)
                 UnityEngine.Debug.Break();
 
             if (UnityEditor.EditorUtility.DisplayDialog("Assert!", message, "Show", "Cancel"))

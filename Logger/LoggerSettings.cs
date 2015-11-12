@@ -19,7 +19,7 @@ namespace UnityUtils.Debugging
             LoggerOption.BREAK_ON_ASSERT |
             LoggerOption.BREAK_ON_ERROR |
             LoggerOption.ECHO_TO_CONSOLE;
-        public LoggerErrorType ErrorType = LoggerErrorType.Trace;
+        public LoggerLogLevel LogLevel = LoggerLogLevel.Trace;
         public uint RotateSize;
     }
 }

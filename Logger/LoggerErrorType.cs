@@ -1,6 +1,6 @@
 ﻿namespace UnityUtils.Debugging
 {
-  public enum LoggerErrorType
+  public enum LoggerLogLevel
   {
     Trace = 0,
     Info = 1,
