@@ -2,14 +2,17 @@
 using System.Collections;
 using UnityUtils.Engine.Utilities.CustomTypes;
 
-public static class MonoBehaviourExtensions
+namespace UnityUtils.Engine.Utilities.Extensions
 {
-    public static FuturePassable Async(this MonoBehaviour mb, IEnumerator coroutine)
+    public static class MonoBehaviourExtensions
     {
-        return new FuturePassable
+        public static FuturePassable Async(this MonoBehaviour mb, IEnumerator coroutine)
         {
-            MonoBehaviour = mb,
-            Coroutine = coroutine
-        };
+            return new FuturePassable
+            {
+                MonoBehaviour = mb,
+                Coroutine = coroutine
+            };
+        }
     }
 }
