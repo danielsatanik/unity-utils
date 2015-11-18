@@ -10,6 +10,7 @@ namespace UnityUtils.Manager.Editor
         #pragma warning disable 414
         SerializedObject mObject;
         SerializedProperty mVersion;
+        SerializedProperty mKeepCorrectDirectory;
 
         PluginInformation mInfo;
 
@@ -17,6 +18,7 @@ namespace UnityUtils.Manager.Editor
         {
             mObject = serializedObject;
             mVersion = serializedObject.FindProperty("Version");
+            mKeepCorrectDirectory = serializedObject.FindProperty("KeepCorrectDirectory");
 
             mInfo = target as PluginInformation;
         }
@@ -36,6 +38,11 @@ namespace UnityUtils.Manager.Editor
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Separator();
+
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(mKeepCorrectDirectory);
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Version", GUILayout.Width(50));
