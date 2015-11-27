@@ -16,7 +16,7 @@ namespace UnityUtils.Engine.Utilities.CustomTypes
         T m_returnVal;
         bool m_unset = true;
         Exception m_exception;
-        Coroutine m_coroutine;
+        //        Coroutine m_coroutine;
 
         public void Wait()
         {
@@ -71,7 +71,9 @@ namespace UnityUtils.Engine.Utilities.CustomTypes
         {
             var future = new Future<T>();
             var enumerator = future.InternalRoutine(fp.Coroutine);
-            future.m_coroutine = fp.MonoBehaviour.StartCoroutine(enumerator);
+            // remove comment if a reference is needed
+            /* future.m_coroutine = */
+            fp.MonoBehaviour.StartCoroutine(enumerator);
             return future;
         }
     }
