@@ -7,7 +7,7 @@ namespace UnityUtils.Manager.Editor
     [CustomEditor(typeof(PluginInformation))]
     public class PluginInformationEditor : UnityEditor.Editor
     {
-        #pragma warning disable 414
+        #pragma warning disable 414 // object never used
         SerializedObject mObject;
         SerializedProperty mVersion;
         SerializedProperty mKeepCorrectDirectory;
@@ -26,7 +26,7 @@ namespace UnityUtils.Manager.Editor
         public override void OnInspectorGUI()
         {
             #if UNITY_UTILS_DEVELOPMENT
-            EditorGUI.BeginChangeCheck();
+            GUI.changed = false;
             #endif
 
             EditorGUILayout.BeginHorizontal();
@@ -65,8 +65,8 @@ namespace UnityUtils.Manager.Editor
             EditorGUILayout.EndVertical();
 
             #if UNITY_UTILS_DEVELOPMENT
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
+            if (GUI.changed)
+                EditorUtility.SetDirty(mInfo);
             #endif
         }
         #pragma warning restore 414
