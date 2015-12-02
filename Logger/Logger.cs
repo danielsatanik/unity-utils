@@ -24,15 +24,17 @@ namespace UnityUtils.Debugging
 
         bool EchoToConsole { get { return (Settings.Options & LoggerOption.ECHO_TO_CONSOLE) == LoggerOption.ECHO_TO_CONSOLE; } }
 
-        string mDirectoryRoot;
+        string _directoryRoot;
 
         string CustomLogfilePrefix { get { return Settings.CustomPrefix; } }
 
         uint LogRotateSize { get { return Settings.RotateSize; } }
 
-        List<StreamWriter> mOutputstreams;
+        Dictionary<LoggerLogLevel, StreamWriter> _outputstreams;
 
         LoggerLogLevel LogLevel { get { return Settings.LogLevel; } }
+
+        LoggerSettingsStyles Styles { get { return Settings.Styles; } }
 
         #region private interface
 
@@ -47,24 +49,33 @@ namespace UnityUtils.Debugging
             }
             #endif
 
-            mDirectoryRoot = GetDirectoryRoot();
+            _directoryRoot = GetDirectoryRoot();
 
-            mOutputstreams = new List<StreamWriter>();
+            _outputstreams = new Dictionary<LoggerLogLevel, StreamWriter>();
             foreach (var type in Enum.GetValues(typeof(LoggerLogLevel)))
             {
-                mOutputstreams.Add(File.AppendText(GetLogFileName((LoggerLogLevel)type)));
+                _outputstreams.Add((LoggerLogLevel)type, File.AppendText(GetLogFileName((LoggerLogLevel)type)));
             }
         }
 
         void OnDestroy()
         {
             #if !FINAL
-            if (mOutputstreams != null)
+            if (_outputstreams != null)
             {
-                mOutputstreams.ForEach(stream => stream.Close());
-                mOutputstreams = null;
+                foreach (var stream in _outputstreams.Values)
+                    stream.Close();
+                _outputstreams = null;
             }
             #endif
+        }
+
+        string Color(string text, LoggerSettingsStyles.Style style)
+        {
+            if (style.Bold)
+                text = string.Format("<b>{0}</b>", text);
+
+            return string.Format("<color=#{0}>{1}</color>", ColorUtility.ToHtmlStringRGBA(style.Color), text);
         }
 
         string GetLogFileName(LoggerLogLevel type)
@@ -77,7 +88,7 @@ namespace UnityUtils.Debugging
             const string prefix = "";
             #endif
             string typeName = Enum.GetName(typeof(LoggerLogLevel), type);
-            return String.Format("{0}{1}.{2}.{3}.log", mDirectoryRoot, prefix, CustomLogfilePrefix, typeName.ToLower());
+            return String.Format("{0}{1}.{2}.{3}.log", _directoryRoot, prefix, CustomLogfilePrefix, typeName.ToLower());
         }
 
         void LogRotate(LoggerLogLevel type)
@@ -93,40 +104,43 @@ namespace UnityUtils.Debugging
             // 0 size means, do not rotate
             if (LogRotateSize > 0 && logFile.Length >= 1024 * LogRotateSize)
             {
-                mOutputstreams[(int)type].Close();
+                _outputstreams[type].Close();
                 Compress(logFile);
                 logFile.Delete();
-                mOutputstreams[(int)type] = new StreamWriter(fileName, true);
+                _outputstreams[type] = new StreamWriter(fileName, true);
             }
         }
 
-        void Write(LoggerLogLevel type, string message)
+        void Write(LoggerLogLevel level, string message)
         {
-            message = String.Format("[{0}] {1}", (int)type, message);
+            message = Color(message, Styles.Text);
+
+            var logName = level.ToString().ToUpper();
+            message = Color(" [" + logName + "] ", Styles.LogLevel[level]) + message;
+            
             if (AddTimeStamp)
             {
                 #if UNITY_EDITOR
                 GetStackTraceString(ref message, 4);
                 #endif
                 DateTime now = DateTime.Now;
-                message = string.Format("[{0:H:mm:ss.fff}] {1}", now, message);
+                message =
+                    Color("[", Styles.Brackets) +
+                Color(string.Format("{0:H:mm:ss.fff}", now), Styles.Timestamp) +
+                Color("]", Styles.Brackets) + message;
             }
 
-            // use all log files to write message in all "weaker" levels
-            for (int i = 0; i < ((int)type) + 1; ++i)
-            {
-                LogRotate((LoggerLogLevel)i);
-                mOutputstreams[i].WriteLine(message);
-                mOutputstreams[i].Flush();
-            }
+            LogRotate(level);
+            _outputstreams[level].WriteLine(message);
+            _outputstreams[level].Flush();
 
             if (EchoToConsole)
             {
-                if ((int)type >= (int)LogLevel && (int)type <= (int)LoggerLogLevel.Info) // Both Trace and Info go here
+                if ((LogLevel & level) == LoggerLogLevel.Trace || (LogLevel & level) == LoggerLogLevel.Info) // Both Trace and Info go here
                     UnityEngine.Debug.Log(message);
-                else if ((int)type >= (int)LogLevel && type == LoggerLogLevel.Warning)
+                else if ((LogLevel & level) == LoggerLogLevel.Warn)
                     UnityEngine.Debug.LogWarning(message);
-                else if ((int)type >= (int)LogLevel) // Both Error and Assert go here.
+                else if ((LogLevel & level) == LoggerLogLevel.Error || (LogLevel & level) == LoggerLogLevel.Assert) // Both Error and Assert go here.
                     UnityEngine.Debug.LogError(message);
             }
         }
@@ -172,7 +186,7 @@ namespace UnityUtils.Debugging
         {
             #if !FINAL
             message = String.Format(message, list);
-            WrapWrite(LoggerLogLevel.Warning, message);
+            WrapWrite(LoggerLogLevel.Warn, message);
             #endif
         }
 

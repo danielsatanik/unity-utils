@@ -11,7 +11,30 @@ namespace UnityUtils.Engine.UI
                 GUIStyle s = new GUIStyle();
                 s.alignment = TextAnchor.MiddleCenter;
                 s.fontSize = 20;
-//        s.normal.background = MakeTex(9999, 40, Color.white);
+                s.normal.textColor = Color.white;
+                return s;
+            }
+        }
+
+        public static GUIStyle HeaderLeft
+        {
+            get
+            {
+                GUIStyle s = new GUIStyle();
+                s.alignment = TextAnchor.MiddleLeft;
+                s.fontSize = 14;
+                s.normal.textColor = Color.white;
+                return s;
+            }
+        }
+
+        public static GUIStyle HeaderCenter
+        {
+            get
+            {
+                GUIStyle s = new GUIStyle();
+                s.alignment = TextAnchor.MiddleCenter;
+                s.fontSize = 14;
                 s.normal.textColor = Color.white;
                 return s;
             }
@@ -24,6 +47,49 @@ namespace UnityUtils.Engine.UI
                 GUIStyle s = new GUIStyle();
                 s.alignment = TextAnchor.LowerLeft;
                 s.normal.textColor = Color.white;
+                return s;
+            }
+        }
+
+        public static GUIStyle LightBackground
+        {
+            get
+            {
+                GUIStyle s = new GUIStyle();
+                Color color;
+                if (!ColorUtility.TryParseHtmlString("#3C3C3C", out color))
+                    color = Color.blue;
+                s.normal.background = MakeTex(9999, 40, color);
+                s.clipping = TextClipping.Clip;
+                return s;
+            }
+        }
+
+        public static GUIStyle DarkBackground
+        {
+            get
+            {
+                GUIStyle s = new GUIStyle();
+                Color color;
+                if (!ColorUtility.TryParseHtmlString("#383838", out color))
+                    color = Color.blue;
+                s.normal.background = MakeTex(9999, 40, color);
+                s.clipping = TextClipping.Clip;
+                return s;
+            }
+        }
+
+        public static GUIStyle VeryDarkBackground
+        {
+            get
+            {
+                GUIStyle s = new GUIStyle();
+                Color color;
+                if (!ColorUtility.TryParseHtmlString("#282828", out color))
+                    color = Color.blue;
+                s.padding = new RectOffset(2, 2, 2, 2);
+                s.clipping = TextClipping.Clip;
+                s.normal.background = MakeTex(9999, 40, color);
                 return s;
             }
         }

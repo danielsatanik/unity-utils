@@ -1,11 +1,12 @@
 ﻿namespace UnityUtils.Debugging
 {
-  public enum LoggerLogLevel
-  {
-    Trace = 0,
-    Info = 1,
-    Warning = 2,
-    Error = 3,
-    Assert = 4
-  }
+    [System.Flags]
+    public enum LoggerLogLevel
+    {
+        Trace = 1,
+        Info = 2,
+        Warn = 4,
+        Error = 8,
+        Assert = 16
+    }
 }
