@@ -61,6 +61,47 @@ namespace UnityUtils.Debugging
             LoggerLogLevel.Error |
             LoggerLogLevel.Assert;
         public uint RotateSize;
-        public LoggerSettingsStyles Styles;
+
+        public LoggerSettingsStyles Styles { get; private set; }
+
+        void OnEnable()
+        {
+            Styles = new LoggerSettingsStyles();
+            ResetStyle();
+        }
+
+        public void ResetStyle()
+        {
+            Color c;
+            ColorUtility.TryParseHtmlString("#7F8C8DFF", out c);
+            Styles.Brackets.Color = c;
+            Styles.Brackets.Bold = true;
+            Styles.Timestamp.Color = c;
+            Styles.Timestamp.Bold = true;
+
+            ColorUtility.TryParseHtmlString("#ECF0F1FF", out c);
+            Styles.Text.Color = c;
+            Styles.Text.Bold = false;
+
+            ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
+            Styles.LogLevel[LoggerLogLevel.Trace].Color = c;
+            Styles.LogLevel[LoggerLogLevel.Trace].Bold = true;
+
+            ColorUtility.TryParseHtmlString("#3498DBFF", out c);
+            Styles.LogLevel[LoggerLogLevel.Info].Color = c;
+            Styles.LogLevel[LoggerLogLevel.Info].Bold = true;
+
+            ColorUtility.TryParseHtmlString("#F1C40FFF", out c);
+            Styles.LogLevel[LoggerLogLevel.Warn].Color = c;
+            Styles.LogLevel[LoggerLogLevel.Warn].Bold = true;
+
+            ColorUtility.TryParseHtmlString("#C0392BFF", out c);
+            Styles.LogLevel[LoggerLogLevel.Error].Color = c;
+            Styles.LogLevel[LoggerLogLevel.Error].Bold = true;
+
+            ColorUtility.TryParseHtmlString("#FF5342FF", out c);
+            Styles.LogLevel[LoggerLogLevel.Assert].Color = c;
+            Styles.LogLevel[LoggerLogLevel.Assert].Bold = true;
+        }
     }
 }

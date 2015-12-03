@@ -13,8 +13,8 @@ namespace UnityUtils.Debugging.Editor
 
         Vector2 _logPosition;
 
-        GUILayoutOption _maxWidth = GUILayout.MaxWidth(9999);
-        GUILayoutOption _toggleWidth = GUILayout.MinWidth(EditorGUIUtility.labelWidth - 40);
+        readonly GUILayoutOption _maxWidth = GUILayout.MaxWidth(9999);
+        readonly GUILayoutOption _toggleWidth = GUILayout.MinWidth(EditorGUIUtility.labelWidth - 40);
 
         void OnEnable()
         {
@@ -99,7 +99,7 @@ namespace UnityUtils.Debugging.Editor
             var i = 0;
             foreach (var pair in _settings.Styles.LogLevel)
             {
-                if (i++ % 2 == 0)
+                if (i % 2 == 0)
                     EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.DarkBackground);
                 else
                     EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.LightBackground);
@@ -117,6 +117,7 @@ namespace UnityUtils.Debugging.Editor
 
             EditorGUILayout.Separator();
 
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Log"))
             {
                 Logger.Trace("This is a trace log");
@@ -124,6 +125,12 @@ namespace UnityUtils.Debugging.Editor
                 Logger.Warn("This is a warn log");
                 Logger.Error("This is a error log");
             }
+
+            if (GUILayout.Button("Reset Style"))
+            {
+                _settings.ResetStyle();
+            }
+            EditorGUILayout.EndHorizontal();
 
             if (GUI.changed)
                 EditorUtility.SetDirty(target);
