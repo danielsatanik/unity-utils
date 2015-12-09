@@ -13,6 +13,7 @@ namespace UnityUtils.Editor.PropertyDrawers
                                    SerializedProperty property,
                                    GUIContent label)
         {
+            
             if (Application.isPlaying)
                 GUI.enabled = false;
             EditorGUI.PropertyField(position, property, label, true);

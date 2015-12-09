@@ -97,7 +97,7 @@ namespace UnityUtils.Debugging
             var logFile = new FileInfo(fileName);
             if (!logFile.Exists)
             {
-                UnityEngine.Debug.Assert(false, "Logfile {0} has to exist", fileName);
+                UnityEngine.Debug.AssertFormat(false, "Logfile {0} has to exist", fileName);
                 UnityEngine.Debug.Break();
             }
 

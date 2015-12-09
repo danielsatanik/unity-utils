@@ -42,7 +42,7 @@ namespace UnityUtils.Utilities.Behaviours
 
                     if (System.String.IsNullOrEmpty(prefabName))
                     {
-                        Debug.Assert(true, "Prefab name is empty for Singleton of type \"{0}\"", type);
+                        Debug.AssertFormat(true, "Prefab name is empty for Singleton of type \"{0}\"", type);
                         Application.Quit();
                         return null;
                     }
@@ -51,7 +51,7 @@ namespace UnityUtils.Utilities.Behaviours
 
                     if (gameobject == null)
                     {
-                        Debug.Assert(true, "Could not find Prefab \"{0}\" on Resources for Singleton of type \"{1}\".", prefabName, type);
+                        Debug.AssertFormat(true, "Could not find Prefab \"{0}\" on Resources for Singleton of type \"{1}\".", prefabName, type);
                         Application.Quit();
                         return null;
                     }

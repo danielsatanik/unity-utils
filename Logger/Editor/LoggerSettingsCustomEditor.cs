@@ -99,7 +99,7 @@ namespace UnityUtils.Debugging.Editor
             var i = 0;
             foreach (var pair in _settings.Styles.LogLevel)
             {
-                if (i % 2 == 0)
+                if (i++ % 2 == 0)
                     EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.DarkBackground);
                 else
                     EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.LightBackground);
