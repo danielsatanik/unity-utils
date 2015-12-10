@@ -118,6 +118,7 @@ namespace UnityUtils.Debugging.Editor
             EditorGUILayout.Separator();
 
             EditorGUILayout.BeginHorizontal();
+            GUI.enabled = Application.isPlaying;
             if (GUILayout.Button("Log"))
             {
                 Logger.Trace("This is a trace log");
@@ -125,6 +126,7 @@ namespace UnityUtils.Debugging.Editor
                 Logger.Warn("This is a warn log");
                 Logger.Error("This is a error log");
             }
+            GUI.enabled = true;
 
             if (GUILayout.Button("Reset Style"))
             {
