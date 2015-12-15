@@ -80,7 +80,10 @@ namespace UnityUtils.Debugging.Editor
 
             PlaceStyle(_settings.Styles.Brackets);
             PlaceStyle(_settings.Styles.Timestamp);
+            PlaceStyle(_settings.Styles.Type);
             PlaceStyle(_settings.Styles.Text);
+            PlaceStyle(_settings.Styles.ListKey);
+            PlaceStyle(_settings.Styles.ListValue);
 
             EditorGUILayout.Separator();
 
@@ -108,7 +111,10 @@ namespace UnityUtils.Debugging.Editor
                     C("12:29:08.028", _settings.Styles.Timestamp) +
                     C("]", _settings.Styles.Brackets) +
                     C(" [" + pair.Key.ToString().ToUpper() + "] ", pair.Value) +
-                    C("This is a log message!\nFilename: miracle_file.cs\n", _settings.Styles.Text),
+                    C("ExampleClass: ", _settings.Styles.Type) +
+                    C("This is a log message!\n", _settings.Styles.Text) +
+                    C("Filename: ", _settings.Styles.ListKey) +
+                    C("miracle_file.cs\n", _settings.Styles.ListValue),
                     style, GUILayout.Height(30));
 
                 EditorGUILayout.EndHorizontal();
@@ -122,9 +128,10 @@ namespace UnityUtils.Debugging.Editor
             if (GUILayout.Button("Log"))
             {
                 Logger.Trace("This is a trace log");
-                Logger.Info("This is a info log");
+                Logger.Info("This is an info log");
                 Logger.Warn("This is a warn log");
                 Logger.Error("This is a error log");
+                Logger.Assert(false, "This is an assert log");
             }
             GUI.enabled = true;
 

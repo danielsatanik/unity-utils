@@ -26,7 +26,10 @@ namespace UnityUtils.Debugging
 
         public Style Brackets = new Style();
         public Style Timestamp = new Style();
+        public Style Type = new Style();
         public Style Text = new Style();
+        public Style ListKey = new Style();
+        public Style ListValue = new Style();
 
         public Dictionary<LoggerLogLevel, Style> LogLevel
         {
@@ -75,13 +78,25 @@ namespace UnityUtils.Debugging
             Color c;
             ColorUtility.TryParseHtmlString("#7F8C8DFF", out c);
             Styles.Brackets.Color = c;
-            Styles.Brackets.Bold = true;
+            Styles.Brackets.Bold = false;
             Styles.Timestamp.Color = c;
-            Styles.Timestamp.Bold = true;
+            Styles.Timestamp.Bold = false;
+
+            ColorUtility.TryParseHtmlString("#27AE60FF", out c);
+            Styles.Type.Color = c;
+            Styles.Type.Bold = true;
 
             ColorUtility.TryParseHtmlString("#ECF0F1FF", out c);
             Styles.Text.Color = c;
             Styles.Text.Bold = false;
+
+            ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
+            Styles.ListKey.Color = c;
+            Styles.ListKey.Bold = false;
+
+            ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
+            Styles.ListValue.Color = c;
+            Styles.ListValue.Bold = false;
 
             ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
             Styles.LogLevel[LoggerLogLevel.Trace].Color = c;
