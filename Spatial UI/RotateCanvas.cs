@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityUtils.Debugging;
+using Logger = UnityUtils.Debugging.Logger;
 
 namespace UnityUtils.SpatialUI
 {

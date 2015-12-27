@@ -33,5 +33,27 @@ namespace UnityUtils.Utilities.Extensions
 
             return maybe;
         }
+
+        public static bool IsFullProperty(this PropertyInfo prop)
+        {
+            return prop.CanRead && prop.CanWrite;
+        }
+
+        public static bool IsAbstract(this PropertyInfo prop)
+        {
+            return prop.PropertyType.IsAbstract;
+        }
+
+        public static bool IsNotifyingPrimitive(this PropertyInfo prop)
+        {
+            var propType = prop.PropertyType;
+            return
+                !prop.IsAutoImplemented() &&
+            (
+                propType.IsPrimitive ||
+                propType == typeof(decimal) ||
+                propType == typeof(string)
+            );
+        }
     }
 }

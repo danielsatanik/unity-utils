@@ -70,7 +70,7 @@ namespace UnityUtils.Debugging
             #endif
         }
 
-        string Color(string text, LoggerSettingsStyles.Style style)
+        static string Color(string text, LoggerSettingsStyles.Style style)
         {
             if (style.Bold)
                 text = string.Format("<b>{0}</b>", text);
@@ -97,7 +97,7 @@ namespace UnityUtils.Debugging
             var logFile = new FileInfo(fileName);
             if (!logFile.Exists)
             {
-                UnityEngine.Debug.Assert(false, "Logfile {0} has to exist", fileName);
+                UnityEngine.Debug.AssertFormat(false, "Logfile {0} has to exist", fileName);
                 UnityEngine.Debug.Break();
             }
 
@@ -113,21 +113,33 @@ namespace UnityUtils.Debugging
 
         void Write(LoggerLogLevel level, string message)
         {
-            message = Color(message, Styles.Text);
+            var cmessage = string.Copy(message);
+            cmessage = Color(cmessage, Styles.Text);
+
+            var type = new StackTrace().GetFrame(3).GetMethod().DeclaringType;
+            if (type.DeclaringType != null)
+                type = type.DeclaringType;
+
+            message = ": " + message;
+            cmessage = Color(type.Name + ": ", Styles.Type) + cmessage;
 
             var logName = level.ToString().ToUpper();
-            message = Color(" [" + logName + "] ", Styles.LogLevel[level]) + message;
+            message = " [" + logName + "] " + message;
+            cmessage = Color(" [" + logName + "] ", Styles.LogLevel[level]) + cmessage;
             
+            #if UNITY_EDITOR
+            GetStackTraceString(ref message, 4, Settings);
+            GetColoredStackTraceString(ref cmessage, 4, Settings);
+            #endif
             if (AddTimeStamp)
             {
-                #if UNITY_EDITOR
-                GetStackTraceString(ref message, 4);
-                #endif
                 DateTime now = DateTime.Now;
                 message =
+                    "[" + string.Format("{0:H:mm:ss.fff}", now) + "]" + message;
+                cmessage =
                     Color("[", Styles.Brackets) +
                 Color(string.Format("{0:H:mm:ss.fff}", now), Styles.Timestamp) +
-                Color("]", Styles.Brackets) + message;
+                Color("]", Styles.Brackets) + cmessage;
             }
 
             LogRotate(level);
@@ -137,11 +149,11 @@ namespace UnityUtils.Debugging
             if (EchoToConsole)
             {
                 if ((LogLevel & level) == LoggerLogLevel.Trace || (LogLevel & level) == LoggerLogLevel.Info) // Both Trace and Info go here
-                    UnityEngine.Debug.Log(message);
+                    UnityEngine.Debug.Log(cmessage);
                 else if ((LogLevel & level) == LoggerLogLevel.Warn)
-                    UnityEngine.Debug.LogWarning(message);
+                    UnityEngine.Debug.LogWarning(cmessage);
                 else if ((LogLevel & level) == LoggerLogLevel.Error || (LogLevel & level) == LoggerLogLevel.Assert) // Both Error and Assert go here.
-                    UnityEngine.Debug.LogError(message);
+                    UnityEngine.Debug.LogError(cmessage);
             }
         }
 
@@ -212,7 +224,17 @@ namespace UnityUtils.Debugging
             #if UNITY_EDITOR
             var myTrace = new StackTrace(true);
             StackFrame myFrame = myTrace.GetFrame(1);
-            GetStackTraceString(ref message, 2);
+
+            var settings = Resources.Load<LoggerSettings>("LoggerSettings");
+            #if DEBUG
+            if (settings == null)
+            {
+                UnityEngine.Debug.LogError("Logger Settings object not found. Pleas create it via Unity Utils/Create/Logger Settings");
+                UnityEngine.Debug.Break();
+            }
+            #endif
+
+            GetStackTraceString(ref message, 2, settings);
 
             if (Logger.Instance.BreakOnAssert)
                 UnityEngine.Debug.Break();
@@ -230,18 +252,40 @@ namespace UnityUtils.Debugging
 
         #region helper
 
-        static void GetStackTraceString(ref string origMessage, int depth)
+        static void GetStackTraceString(ref string origMessage, int depth, LoggerSettings settings)
         {
             #if UNITY_EDITOR
             var myTrace = new StackTrace(true);
             StackFrame myFrame = myTrace.GetFrame(depth);
             string messageInformation = String.Format(
-                                            "Filename: {0}\nNamespace: {1}\nMethod: {2}.{3}\nLine: {4}",
-                                            myFrame.GetFileName(),
+                                            "{0}{4}\n{1}{5}\n{2}{6}\n{3}{7}",
+                                            "Filename: ",
+                                            "Namespace: ",
+                                            "Method: ",
+                                            "Line: ",
+                                            myFrame.GetFileName().Replace(Application.dataPath + "/", ""),
                                             myFrame.GetMethod().DeclaringType.Namespace,
-                                            myFrame.GetMethod().DeclaringType.Name,
-                                            myFrame.GetMethod().ToString().Split(' ')[1],
+                                            myFrame.GetMethod().DeclaringType.Name + "." + myFrame.GetMethod().ToString().Split(' ')[1],
                                             myFrame.GetFileLineNumber());
+            origMessage = origMessage + "\n" + messageInformation;
+            #endif
+        }
+
+        static void GetColoredStackTraceString(ref string origMessage, int depth, LoggerSettings settings)
+        {
+            #if UNITY_EDITOR
+            var myTrace = new StackTrace(true);
+            StackFrame myFrame = myTrace.GetFrame(depth);
+            string messageInformation = String.Format(
+                                            "{0}{4}\n{1}{5}\n{2}{6}\n{3}{7}",
+                                            Color("Filename: ", settings.Styles.ListKey),
+                                            Color("Namespace: ", settings.Styles.ListKey),
+                                            Color("Method: ", settings.Styles.ListKey),
+                                            Color("Line: ", settings.Styles.ListKey),
+                                            Color(myFrame.GetFileName().Replace(Application.dataPath + "/", ""), settings.Styles.ListValue),
+                                            Color(myFrame.GetMethod().DeclaringType.Namespace, settings.Styles.ListValue),
+                                            Color(myFrame.GetMethod().DeclaringType.Name + "." + myFrame.GetMethod().ToString().Split(' ')[1], settings.Styles.ListValue),
+                                            Color(myFrame.GetFileLineNumber().ToString(), settings.Styles.ListValue));
             origMessage = origMessage + "\n" + messageInformation;
             #endif
         }

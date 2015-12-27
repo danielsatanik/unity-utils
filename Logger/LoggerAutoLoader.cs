@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using UnityUtils.Utilities.Extensions;
 
+#if UNITY_5_3
+using UnityEngine.SceneManagement;
+#endif
+
 namespace UnityUtils.Debugging
 {
     static class LoggerAutoLoader
@@ -12,14 +16,20 @@ namespace UnityUtils.Debugging
             #if DEBUG
             if (settings == null)
             {
-                UnityEngine.Debug.LogError("Logger Settings object not found. Pleas create it via Unity Utils/Create/Logger Settings and place it under any Resources-folder");
-                UnityEngine.Debug.Break();
+                Debug.LogError("Logger Settings object not found. Pleas create it via Unity Utils/Create/Logger Settings and place it under any Resources-folder");
+                Debug.Break();
             }
             #endif
             if (settings.AutoLoad)
             {
+                #if UNITY_5_3
+                var scene = SceneManager.GetActiveScene();
+                if (string.IsNullOrEmpty(scene.name) ||
+                    scene.name.In(settings.SceneNames.Values))
+                #else
                 if (string.IsNullOrEmpty(Application.loadedLevelName) ||
                     Application.loadedLevelName.In(settings.SceneNames.Values))
+                #endif
                 {
                     #pragma warning disable 0168
                     var tmp = Logger.Instance;
