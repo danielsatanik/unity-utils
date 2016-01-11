@@ -5,6 +5,7 @@ using UnityUtils.Engine.Attributes;
 using UnityUtils.Attributes;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace UnityUtils.Debugging
 {
@@ -21,6 +22,12 @@ namespace UnityUtils.Debugging
         Style[] _logLevel =
             Enum.GetValues(typeof(LoggerLogLevel))
                 .Cast<LoggerLogLevel>()
+                .Select(lvl => new Style())
+                .ToArray();
+
+        Style[] _logType =
+            Enum.GetValues(typeof(LoggerLogType))
+                .Cast<LoggerLogType>()
                 .Select(lvl => new Style())
                 .ToArray();
 
@@ -41,14 +48,25 @@ namespace UnityUtils.Debugging
                 return dict;
             }
         }
+
+        public Dictionary<LoggerLogType, Style> LogType
+        {
+            get
+            {
+                var dict = new Dictionary<LoggerLogType, Style>();
+                for (var i = 0; i < _logType.Length; ++i)
+                    dict.Add((LoggerLogType)(Enum.GetValues(typeof(LoggerLogType)).GetValue(i)), _logType[i]);
+                return dict;
+            }
+        }
     }
 
-    [AutoCreateAsset("Assets/Unity Utils/Logger/Resources")]
     [Serializable]
+    [InitializeOnLoad]
     public sealed class LoggerSettings : ScriptableObject
     {
-        public bool AutoLoad;
-        public SceneList SceneNames;
+        //        public bool AutoLoad;
+        //        public SceneList SceneNames;
         public string CustomPrefix;
         [Flag]
         public LoggerOption Options = 
@@ -63,11 +81,18 @@ namespace UnityUtils.Debugging
             LoggerLogLevel.Warn |
             LoggerLogLevel.Error |
             LoggerLogLevel.Assert;
+        [Flag]
+        public LoggerLogType LogType = 
+            LoggerLogType.Info |
+            LoggerLogType.Warn |
+            LoggerLogType.Error |
+            LoggerLogType.Assert |
+            LoggerLogType.Exception;
         public uint RotateSize;
 
         public LoggerSettingsStyles Styles { get; private set; }
 
-        void OnEnable()
+        public LoggerSettings()
         {
             Styles = new LoggerSettingsStyles();
             ResetStyle();
@@ -117,6 +142,27 @@ namespace UnityUtils.Debugging
             ColorUtility.TryParseHtmlString("#FF5342FF", out c);
             Styles.LogLevel[LoggerLogLevel.Assert].Color = c;
             Styles.LogLevel[LoggerLogLevel.Assert].Bold = true;
+
+
+            ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
+            Styles.LogType[LoggerLogType.Exception].Color = c;
+            Styles.LogType[LoggerLogType.Exception].Bold = true;
+
+            ColorUtility.TryParseHtmlString("#3498DBFF", out c);
+            Styles.LogType[LoggerLogType.Info].Color = c;
+            Styles.LogType[LoggerLogType.Info].Bold = true;
+
+            ColorUtility.TryParseHtmlString("#F1C40FFF", out c);
+            Styles.LogType[LoggerLogType.Warn].Color = c;
+            Styles.LogType[LoggerLogType.Warn].Bold = true;
+
+            ColorUtility.TryParseHtmlString("#C0392BFF", out c);
+            Styles.LogType[LoggerLogType.Error].Color = c;
+            Styles.LogType[LoggerLogType.Error].Bold = true;
+
+            ColorUtility.TryParseHtmlString("#FF5342FF", out c);
+            Styles.LogType[LoggerLogType.Assert].Color = c;
+            Styles.LogType[LoggerLogType.Assert].Bold = true;
         }
     }
 }

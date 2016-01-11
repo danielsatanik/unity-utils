@@ -30,7 +30,7 @@ namespace UnityUtils.Debugging
 
         uint LogRotateSize { get { return Settings.RotateSize; } }
 
-        Dictionary<LoggerLogLevel, StreamWriter> _outputstreams;
+        //        Dictionary<LoggerLogLevel, StreamWriter> _outputstreams;
 
         LoggerLogLevel LogLevel { get { return Settings.LogLevel; } }
 
@@ -51,23 +51,24 @@ namespace UnityUtils.Debugging
 
             _directoryRoot = GetDirectoryRoot();
 
-            _outputstreams = new Dictionary<LoggerLogLevel, StreamWriter>();
+//            _outputstreams = new Dictionary<LoggerLogLevel, StreamWriter>();
             foreach (var type in Enum.GetValues(typeof(LoggerLogLevel)))
             {
-                _outputstreams.Add((LoggerLogLevel)type, File.AppendText(GetLogFileName((LoggerLogLevel)type)));
+//                _outputstreams.Add((LoggerLogLevel)type, File.AppendText(GetLogFileName((LoggerLogLevel)type)));
+                File.AppendText(GetLogFileName((LoggerLogLevel)type)).Close();
             }
         }
 
         void OnDestroy()
         {
-            #if !FINAL
-            if (_outputstreams != null)
-            {
-                foreach (var stream in _outputstreams.Values)
-                    stream.Close();
-                _outputstreams = null;
-            }
-            #endif
+//            #if !FINAL
+//            if (_outputstreams != null)
+//            {
+//                foreach (var stream in _outputstreams.Values)
+//                    stream.Close();
+//                _outputstreams = null;
+//            }
+//            #endif
         }
 
         static string Color(string text, LoggerSettingsStyles.Style style)
@@ -87,8 +88,11 @@ namespace UnityUtils.Debugging
             #else
             const string prefix = "";
             #endif
+            var customPrefix = CustomLogfilePrefix;
+            if (!string.IsNullOrEmpty(customPrefix))
+                customPrefix += ".";
             string typeName = Enum.GetName(typeof(LoggerLogLevel), type);
-            return String.Format("{0}{1}.{2}.{3}.log", _directoryRoot, prefix, CustomLogfilePrefix, typeName.ToLower());
+            return String.Format("{0}{1}.{2}{3}.log", _directoryRoot, prefix, customPrefix, typeName.ToLower());
         }
 
         void LogRotate(LoggerLogLevel type)
@@ -104,15 +108,16 @@ namespace UnityUtils.Debugging
             // 0 size means, do not rotate
             if (LogRotateSize > 0 && logFile.Length >= 1024 * LogRotateSize)
             {
-                _outputstreams[type].Close();
+//                _outputstreams[type].Close();
                 Compress(logFile);
                 logFile.Delete();
-                _outputstreams[type] = new StreamWriter(fileName, true);
+//                _outputstreams[type] = new StreamWriter(fileName, true);
             }
         }
 
         void Write(LoggerLogLevel level, string message)
         {
+            var origMessage = string.Copy(message);
             var cmessage = string.Copy(message);
             cmessage = Color(cmessage, Styles.Text);
 
@@ -143,17 +148,18 @@ namespace UnityUtils.Debugging
             }
 
             LogRotate(level);
-            _outputstreams[level].WriteLine(message);
-            _outputstreams[level].Flush();
+            var file = File.AppendText(GetLogFileName(level));
+            file.WriteLine(message);
+            file.Close();
 
-            if (EchoToConsole)
+            if (EchoToConsole && (LogLevel & level) > 0)
             {
                 if ((LogLevel & level) == LoggerLogLevel.Trace || (LogLevel & level) == LoggerLogLevel.Info) // Both Trace and Info go here
-                    UnityEngine.Debug.Log(cmessage);
+                    UnityEngine.Debug.Log(origMessage);
                 else if ((LogLevel & level) == LoggerLogLevel.Warn)
-                    UnityEngine.Debug.LogWarning(cmessage);
+                    UnityEngine.Debug.LogWarning(origMessage);
                 else if ((LogLevel & level) == LoggerLogLevel.Error || (LogLevel & level) == LoggerLogLevel.Assert) // Both Error and Assert go here.
-                    UnityEngine.Debug.LogError(cmessage);
+                    UnityEngine.Debug.LogError(origMessage);
             }
         }
 

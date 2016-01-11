@@ -20,22 +20,22 @@ namespace UnityUtils.Debugging
                 Debug.Break();
             }
             #endif
-            if (settings.AutoLoad)
-            {
-                #if UNITY_5_3
-                var scene = SceneManager.GetActiveScene();
-                if (string.IsNullOrEmpty(scene.name) ||
-                    scene.name.In(settings.SceneNames.Values))
-                #else
-                if (string.IsNullOrEmpty(Application.loadedLevelName) ||
-                    Application.loadedLevelName.In(settings.SceneNames.Values))
-                #endif
-                {
-                    #pragma warning disable 0168
-                    var tmp = Logger.Instance;
-                    #pragma warning restore 0168
-                }
-            }
+//            if (settings.AutoLoad)
+//            {
+//                #if UNITY_5_3
+//                var scene = SceneManager.GetActiveScene();
+//                if (string.IsNullOrEmpty(scene.name) ||
+//                    scene.name.In(settings.SceneNames.Values))
+//                        #else
+//                        if (string.IsNullOrEmpty(Application.loadedLevelName) ||
+//                            Application.loadedLevelName.In(settings.SceneNames.Values))
+//                        #endif
+//                        {
+//            #pragma warning disable 0168
+//            var tmp = Logger.Instance;
+//            #pragma warning restore 0168
+//                }
+//            }
         }
     }
 }
