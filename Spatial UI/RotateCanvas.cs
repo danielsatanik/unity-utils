@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Logger = UnityUtils.Debugging.Logger;
 
 namespace UnityUtils.SpatialUI
 {
@@ -12,7 +11,7 @@ namespace UnityUtils.SpatialUI
         void OnEnable()
         {
             var go = GameObject.FindGameObjectWithTag("MainCamera");
-            Logger.Assert(go != null, "There has to be a MainCamera");
+            Debug.Assert(go != null, "There has to be a MainCamera");
             GetComponent<Canvas>().worldCamera = go.GetComponent<Camera>();
         }
 
