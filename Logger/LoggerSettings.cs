@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using System;
-using UnityUtils.CustomTypes;
-using UnityUtils.Engine.Attributes;
-using UnityUtils.Attributes;
 using System.Linq;
 using System.Collections.Generic;
+using UnityUtils.Engine.Attributes;
 
 namespace UnityUtils.Debugging
 {
@@ -16,6 +14,19 @@ namespace UnityUtils.Debugging
         {
             public Color Color = Color.white;
             public bool Bold;
+
+            public static string operator+(string text, Style style)
+            {
+                if (style.Bold)
+                    text = string.Format("<b>{0}</b>", text);
+
+                return string.Format("<color=#{0}>{1}</color>", UnityEngine.ColorUtility.ToHtmlStringRGBA(style.Color), text);
+            }
+
+            public static string operator+(Style style, string text)
+            {
+                return text + style;
+            }
         }
 
         Style[] _logLevel =
@@ -43,12 +54,9 @@ namespace UnityUtils.Debugging
         }
     }
 
-    [AutoCreateAsset("Assets/Unity Utils/Logger/Resources")]
     [Serializable]
     public sealed class LoggerSettings : ScriptableObject
     {
-        public bool AutoLoad;
-        public SceneList SceneNames;
         public string CustomPrefix;
         [Flag]
         public LoggerOption Options = 
@@ -57,17 +65,17 @@ namespace UnityUtils.Debugging
             LoggerOption.BREAK_ON_ERROR |
             LoggerOption.ECHO_TO_CONSOLE;
         [Flag]
-        public LoggerLogLevel LogLevel =
-            LoggerLogLevel.Trace |
+        public LoggerLogLevel LogType = 
             LoggerLogLevel.Info |
             LoggerLogLevel.Warn |
             LoggerLogLevel.Error |
-            LoggerLogLevel.Assert;
+            LoggerLogLevel.Assert |
+            LoggerLogLevel.Exception;
         public uint RotateSize;
 
         public LoggerSettingsStyles Styles { get; private set; }
 
-        void OnEnable()
+        public LoggerSettings()
         {
             Styles = new LoggerSettingsStyles();
             ResetStyle();
@@ -98,9 +106,10 @@ namespace UnityUtils.Debugging
             Styles.ListValue.Color = c;
             Styles.ListValue.Bold = false;
 
+
             ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
-            Styles.LogLevel[LoggerLogLevel.Trace].Color = c;
-            Styles.LogLevel[LoggerLogLevel.Trace].Bold = true;
+            Styles.LogLevel[LoggerLogLevel.Exception].Color = c;
+            Styles.LogLevel[LoggerLogLevel.Exception].Bold = true;
 
             ColorUtility.TryParseHtmlString("#3498DBFF", out c);
             Styles.LogLevel[LoggerLogLevel.Info].Color = c;

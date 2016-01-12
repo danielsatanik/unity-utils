@@ -55,14 +55,9 @@ namespace UnityUtils.Debugging.Editor
 
             EditorGUILayout.Separator();
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("AutoLoad"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("SceneNames"));
-
-            EditorGUILayout.Separator();
-
             EditorGUILayout.PropertyField(serializedObject.FindProperty("CustomPrefix"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("Options"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("LogLevel"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("LogType"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("RotateSize"));
             EditorGUILayout.HelpBox("The rotation size is in KB. 0 KB means, never rotate.", MessageType.None);
 
@@ -124,14 +119,14 @@ namespace UnityUtils.Debugging.Editor
             EditorGUILayout.Separator();
 
             EditorGUILayout.BeginHorizontal();
-            GUI.enabled = Application.isPlaying;
             if (GUILayout.Button("Log"))
             {
-                Logger.Trace("This is a trace log");
-                Logger.Info("This is an info log");
-                Logger.Warn("This is a warn log");
-                Logger.Error("This is a error log");
-                Logger.Assert(false, "This is an assert log");
+                Debug.Log("This is an info log");
+                Debug.LogFormat("this is a parametrized info {{{0}}}", "log");
+                Debug.LogWarning("This is a warn log");
+                Debug.LogError("This is an error log");
+                Debug.Assert(false, "This is an assert log");
+                throw new Exception("This is an exception");
             }
             GUI.enabled = true;
 
