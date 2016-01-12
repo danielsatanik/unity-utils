@@ -53,11 +53,6 @@ namespace UnityUtils.Debugging.Editor
             EditorGUILayout.LabelField("LOGGER SETTINGS", UnityUtils.Engine.UI.EditorStyles.Title, GUILayout.Height(40));
             EditorGUILayout.EndHorizontal();
 
-//            EditorGUILayout.Separator();
-//
-//            EditorGUILayout.PropertyField(serializedObject.FindProperty("AutoLoad"));
-//            EditorGUILayout.PropertyField(serializedObject.FindProperty("SceneNames"));
-
             EditorGUILayout.Separator();
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("CustomPrefix"));
@@ -87,7 +82,7 @@ namespace UnityUtils.Debugging.Editor
 
             EditorGUILayout.Separator();
 
-            foreach (var pair in _settings.Styles.LogType)
+            foreach (var pair in _settings.Styles.LogLevel)
                 PlaceStyle(pair.Value, pair.Key.ToString());
 
             EditorGUILayout.Separator();
@@ -100,7 +95,7 @@ namespace UnityUtils.Debugging.Editor
 
             _logPosition = EditorGUILayout.BeginScrollView(_logPosition, UnityUtils.Engine.UI.EditorStyles.VeryDarkBackground, GUILayout.ExpandHeight(false));
             var i = 0;
-            foreach (var pair in _settings.Styles.LogType)
+            foreach (var pair in _settings.Styles.LogLevel)
             {
                 if (i++ % 2 == 0)
                     EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.DarkBackground);
@@ -126,11 +121,11 @@ namespace UnityUtils.Debugging.Editor
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Log"))
             {
-//                Debug.Log("This is an info log");
-//                Debug.LogFormat("this is a parametrized info {0}", "log");
-//                Debug.LogWarning("This is a warn log");
-//                Debug.LogError("This is a error log");
-//                Debug.Assert(false, "This is an assert log");
+                Debug.Log("This is an info log");
+                Debug.LogFormat("this is a parametrized info {0}", "log");
+                Debug.LogWarning("This is a warn log");
+                Debug.LogError("This is a error log");
+                Debug.Assert(false, "This is an assert log");
                 throw new Exception("This is an exception");
             }
             GUI.enabled = true;
@@ -140,17 +135,6 @@ namespace UnityUtils.Debugging.Editor
                 _settings.ResetStyle();
             }
             EditorGUILayout.EndHorizontal();
-
-            GUI.enabled = Application.isPlaying;
-            if (GUILayout.Button("Log Logger"))
-            {
-                Logger.Trace("This is a trace log");
-                Logger.Info("This is an info log");
-                Logger.Warn("This is a warn log");
-                Logger.Error("This is a error log");
-                Logger.Assert(true, "This is an assert log");
-            }
-            GUI.enabled = true;
 
             if (GUI.changed)
                 EditorUtility.SetDirty(target);

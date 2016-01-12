@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Collections.Generic;
 
-using UnityUtils.Utilities.Extensions;
 using System.Text.RegularExpressions;
+using UnityUtils.Utilities.Extensions;
 
 namespace UnityUtils.Debugging
 {
@@ -33,7 +32,7 @@ namespace UnityUtils.Debugging
 
         uint LogRotateSize { get { return Settings.RotateSize; } }
 
-        LoggerLogType LogLevel { get { return Settings.LogType; } }
+        LoggerLogLevel LogLevel { get { return Settings.LogType; } }
 
         LoggerSettingsStyles Styles { get { return Settings.Styles; } }
 
@@ -44,9 +43,9 @@ namespace UnityUtils.Debugging
 
             _directoryRoot = GetDirectoryRoot();
 
-            foreach (var type in System.Enum.GetValues(typeof(LoggerLogType)))
+            foreach (var type in System.Enum.GetValues(typeof(LoggerLogLevel)))
             {
-                File.AppendText(GetLogFileName((LoggerLogType)type)).Close();
+                File.AppendText(GetLogFileName((LoggerLogLevel)type)).Close();
             }
         }
 
@@ -70,10 +69,10 @@ namespace UnityUtils.Debugging
 
             var logName = level.ToString().ToUpper();
             message = " [" + logName + "] " + message;
-            cmessage = Color(" [" + logName + "] ", Styles.LogType[level]) + cmessage;
+            cmessage = Color(" [" + logName + "] ", Styles.LogLevel[level]) + cmessage;
 
             #if UNITY_EDITOR
-            if (level != LoggerLogType.Exception)
+            if (level != LoggerLogLevel.Exception)
             {
                 GetStackTraceString(ref message, 4);
                 GetColoredStackTraceString(ref cmessage, 4, Settings);
@@ -107,15 +106,16 @@ namespace UnityUtils.Debugging
                 if (logType == UnityEngine.LogType.Exception)
                     logType = UnityEngine.LogType.Error;
                 _defaultLogHandler.LogFormat(logType, context, cmessage);
+                new StackTrace().GetFrames()[0] = new StackTrace().GetFrames()[1];
             }
 
             #if !FINAL && UNITY_EDITOR
-            if (level == LoggerLogType.Assert || level == LoggerLogType.Exception)
+            if (level == LoggerLogLevel.Assert || level == LoggerLogLevel.Exception)
             {
                 if (BreakOnAssert)
                     UnityEngine.Debug.Break();
 
-                if (UnityEditor.EditorUtility.DisplayDialog(System.Enum.GetName(typeof(LoggerLogType), level) + "!", origMessage, "Show", "Cancel"))
+                if (UnityEditor.EditorUtility.DisplayDialog(System.Enum.GetName(typeof(LoggerLogLevel), level) + "!", origMessage, "Show", "Cancel"))
                 {
                     var myTrace = new StackTrace(true);
                     StackFrame myFrame = myTrace.GetFrame(1);
@@ -127,29 +127,35 @@ namespace UnityUtils.Debugging
 
         public void LogException(System.Exception exception, UnityEngine.Object context)
         {
-            LogFormat(UnityEngine.LogType.Exception, new ExceptionContext { Exception = exception }, exception.Message);
-//            _defaultLogHandler.LogException(exception, context);
+            try
+            {
+                LogFormat(UnityEngine.LogType.Exception, new ExceptionContext { Exception = exception }, exception.Message);
+            }
+            catch (System.Exception e)
+            {
+                _defaultLogHandler.LogException(e, context);
+            }
         }
 
         #region helper
 
-        static LoggerLogType Convert(UnityEngine.LogType logType)
+        static LoggerLogLevel Convert(UnityEngine.LogType logType)
         {
             switch (logType)
             {
                 case UnityEngine.LogType.Log:
-                    return LoggerLogType.Info;
+                    return LoggerLogLevel.Info;
                 case UnityEngine.LogType.Warning:
-                    return LoggerLogType.Warn;
+                    return LoggerLogLevel.Warn;
                 case UnityEngine.LogType.Error:
-                    return LoggerLogType.Error;
+                    return LoggerLogLevel.Error;
                 case UnityEngine.LogType.Assert:
-                    return LoggerLogType.Assert;
+                    return LoggerLogLevel.Assert;
             }
-            return LoggerLogType.Exception;
+            return LoggerLogLevel.Exception;
         }
 
-        string GetLogFileName(LoggerLogType type)
+        string GetLogFileName(LoggerLogLevel type)
         {
             #if PROFILE
             const string prefix = "profile";
@@ -158,14 +164,14 @@ namespace UnityUtils.Debugging
             #else
             const string prefix = "";
             #endif
-            string typeName = System.Enum.GetName(typeof(LoggerLogType), type);
+            string typeName = System.Enum.GetName(typeof(LoggerLogLevel), type);
             var customPrefix = CustomLogfilePrefix;
             if (!string.IsNullOrEmpty(customPrefix))
                 customPrefix += ".";
             return string.Format("{0}{1}.{2}{3}.log", _directoryRoot, prefix, customPrefix, typeName.ToLower());
         }
 
-        void LogRotate(LoggerLogType type)
+        void LogRotate(LoggerLogLevel type)
         {
             string fileName = GetLogFileName(type);
             var logFile = new FileInfo(fileName);
@@ -193,16 +199,9 @@ namespace UnityUtils.Debugging
 
         static void GetStackTraceString(ref string origMessage, int depth)
         {
-
-            // TODO: Add test for EXCEPTIONS
             #if UNITY_EDITOR
             var myTrace = new StackTrace(true);
             StackFrame myFrame = myTrace.GetFrame(depth);
-            var z = myFrame.GetFileName();
-            var a = myFrame.GetFileName().Replace(UnityEngine.Application.dataPath + "/", "");
-            var b = myFrame.GetMethod().DeclaringType.Namespace;
-            var c = myFrame.GetMethod().DeclaringType.Name + "." + myFrame.GetMethod().ToString().Split(' ')[1];
-            var d = myFrame.GetFileLineNumber();
             string messageInformation = string.Format(
                                             "{0}{4}\n{1}{5}\n{2}{6}\n{3}{7}",
                                             "Filename: ",

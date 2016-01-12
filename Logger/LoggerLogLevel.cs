@@ -3,10 +3,10 @@
     [System.Flags]
     public enum LoggerLogLevel
     {
-        Trace = 1,
-        Info = 2,
-        Warn = 4,
-        Error = 8,
-        Assert = 16
+        Info = 1,
+        Warn = 2,
+        Error = 4,
+        Assert = 8,
+        Exception = 16
     }
 }
