@@ -4,11 +4,17 @@ using System.IO.Compression;
 using System.Collections.Generic;
 
 using UnityUtils.Utilities.Extensions;
+using System.Text.RegularExpressions;
 
 namespace UnityUtils.Debugging
 {
     public class LogHandler : UnityEngine.ILogHandler
     {
+        class ExceptionContext : UnityEngine.Object
+        {
+            public System.Exception Exception { get; set; }
+        }
+
         readonly UnityEngine.ILogHandler _defaultLogHandler;
 
         LoggerSettings Settings { get; set; }
@@ -67,8 +73,17 @@ namespace UnityUtils.Debugging
             cmessage = Color(" [" + logName + "] ", Styles.LogType[level]) + cmessage;
 
             #if UNITY_EDITOR
-            GetStackTraceString(ref message, 4, Settings);
-            GetColoredStackTraceString(ref cmessage, 4, Settings);
+            if (level != LoggerLogType.Exception)
+            {
+                GetStackTraceString(ref message, 4);
+                GetColoredStackTraceString(ref cmessage, 4, Settings);
+            }
+            else
+            {
+                message += "\n" + ((ExceptionContext)context).Exception.StackTrace;
+                cmessage += "\n" + ((ExceptionContext)context).Exception.StackTrace;
+            }
+            
             #endif
             if (AddTimeStamp)
             {
@@ -88,16 +103,19 @@ namespace UnityUtils.Debugging
 
             if (EchoToConsole && (LogLevel & level) > 0)
             {
+                cmessage = Regex.Replace(cmessage, "({([^{}]*)})", "{{$2}}");
+                if (logType == UnityEngine.LogType.Exception)
+                    logType = UnityEngine.LogType.Error;
                 _defaultLogHandler.LogFormat(logType, context, cmessage);
             }
 
             #if !FINAL && UNITY_EDITOR
-            if (level == LoggerLogType.Assert)
+            if (level == LoggerLogType.Assert || level == LoggerLogType.Exception)
             {
                 if (BreakOnAssert)
                     UnityEngine.Debug.Break();
 
-                if (UnityEditor.EditorUtility.DisplayDialog("Assert!", origMessage, "Show", "Cancel"))
+                if (UnityEditor.EditorUtility.DisplayDialog(System.Enum.GetName(typeof(LoggerLogType), level) + "!", origMessage, "Show", "Cancel"))
                 {
                     var myTrace = new StackTrace(true);
                     StackFrame myFrame = myTrace.GetFrame(1);
@@ -109,8 +127,8 @@ namespace UnityUtils.Debugging
 
         public void LogException(System.Exception exception, UnityEngine.Object context)
         {
-//            LogFormat(UnityEngine.LogType.Exception, context, exception.ToString());
-            _defaultLogHandler.LogException(exception, context);
+            LogFormat(UnityEngine.LogType.Exception, new ExceptionContext { Exception = exception }, exception.Message);
+//            _defaultLogHandler.LogException(exception, context);
         }
 
         #region helper
@@ -173,11 +191,18 @@ namespace UnityUtils.Debugging
             return string.Format("<color=#{0}>{1}</color>", UnityEngine.ColorUtility.ToHtmlStringRGBA(style.Color), text);
         }
 
-        static void GetStackTraceString(ref string origMessage, int depth, LoggerSettings settings)
+        static void GetStackTraceString(ref string origMessage, int depth)
         {
+
+            // TODO: Add test for EXCEPTIONS
             #if UNITY_EDITOR
             var myTrace = new StackTrace(true);
             StackFrame myFrame = myTrace.GetFrame(depth);
+            var z = myFrame.GetFileName();
+            var a = myFrame.GetFileName().Replace(UnityEngine.Application.dataPath + "/", "");
+            var b = myFrame.GetMethod().DeclaringType.Namespace;
+            var c = myFrame.GetMethod().DeclaringType.Name + "." + myFrame.GetMethod().ToString().Split(' ')[1];
+            var d = myFrame.GetFileLineNumber();
             string messageInformation = string.Format(
                                             "{0}{4}\n{1}{5}\n{2}{6}\n{3}{7}",
                                             "Filename: ",
