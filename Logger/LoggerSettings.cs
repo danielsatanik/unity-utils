@@ -14,6 +14,19 @@ namespace UnityUtils.Debugging
         {
             public Color Color = Color.white;
             public bool Bold;
+
+            public static string operator+(string text, Style style)
+            {
+                if (style.Bold)
+                    text = string.Format("<b>{0}</b>", text);
+
+                return string.Format("<color=#{0}>{1}</color>", UnityEngine.ColorUtility.ToHtmlStringRGBA(style.Color), text);
+            }
+
+            public static string operator+(Style style, string text)
+            {
+                return text + style;
+            }
         }
 
         Style[] _logLevel =

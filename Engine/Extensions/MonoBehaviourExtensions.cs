@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityUtils.Engine.Utilities.CustomTypes;
+using UnityUtils.Engine.CustomTypes;
 
-namespace UnityUtils.Engine.Utilities.Extensions
+namespace UnityUtils.Engine.Extensions
 {
     public static class MonoBehaviourExtensions
     {

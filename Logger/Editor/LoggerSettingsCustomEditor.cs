@@ -122,9 +122,9 @@ namespace UnityUtils.Debugging.Editor
             if (GUILayout.Button("Log"))
             {
                 Debug.Log("This is an info log");
-                Debug.LogFormat("this is a parametrized info {0}", "log");
+                Debug.LogFormat("this is a parametrized info {{{0}}}", "log");
                 Debug.LogWarning("This is a warn log");
-                Debug.LogError("This is a error log");
+                Debug.LogError("This is an error log");
                 Debug.Assert(false, "This is an assert log");
                 throw new Exception("This is an exception");
             }

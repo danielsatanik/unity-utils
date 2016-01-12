@@ -10,7 +10,12 @@ namespace UnityUtils.Debugging.Editor
         {
             ScriptableObjectUtility.CreateAssetSafe<LoggerSettings>("Assets/Unity Utils/Logger/Resources");
             var defaultLoggerHandler = UnityEngine.Debug.logger.logHandler;
+
+            #if UNITY_EDITOR
+            UnityEngine.Debug.logger.logHandler = new EditorLogHandler(defaultLoggerHandler);
+            #else
             UnityEngine.Debug.logger.logHandler = new LogHandler(defaultLoggerHandler);
+            #endif
         }
     }
 }

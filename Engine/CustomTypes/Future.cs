@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-namespace UnityUtils.Engine.Utilities.CustomTypes
+namespace UnityUtils.Engine.CustomTypes
 {
     public class FuturePassable
     {
