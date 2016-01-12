@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-
-using System.Text.RegularExpressions;
 using UnityUtils.Utilities.Extensions;
 
 namespace UnityUtils.Debugging
@@ -51,13 +49,14 @@ namespace UnityUtils.Debugging
 
         public void LogFormat(UnityEngine.LogType logType, UnityEngine.Object context, string format, params object[] args)
         {
+            
             var level = Convert(logType);
 
             var message = string.Format(format, args);
 
-            var origMessage = string.Copy(message);
+            var origMessage = string.Copy(@message);
 
-            var cmessage = string.Copy(message);
+            var cmessage = string.Copy(@message);
             cmessage = Color(cmessage, Styles.Text);
 
             var type = new StackTrace().GetFrame(3).GetMethod().DeclaringType;
@@ -102,10 +101,10 @@ namespace UnityUtils.Debugging
 
             if (EchoToConsole && (LogLevel & level) > 0)
             {
-                cmessage = Regex.Replace(cmessage, "({([^{}]*)})", "{{$2}}");
+                cmessage = cmessage.Replace("{", "{{").Replace("}", "}}");
                 if (logType == UnityEngine.LogType.Exception)
                     logType = UnityEngine.LogType.Error;
-                _defaultLogHandler.LogFormat(logType, context, cmessage);
+                _defaultLogHandler.LogFormat(logType, context, @cmessage);
                 new StackTrace().GetFrames()[0] = new StackTrace().GetFrames()[1];
             }
 

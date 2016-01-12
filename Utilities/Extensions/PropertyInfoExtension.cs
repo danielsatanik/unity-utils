@@ -54,6 +54,7 @@ namespace UnityUtils.Utilities.Extensions
                 propType.IsPrimitive ||
                 propType == typeof(decimal) ||
                 propType == typeof(string) ||
+                propType == typeof(DateTime) ||
                 propType.IsEnum
             );
         }
@@ -70,6 +71,7 @@ namespace UnityUtils.Utilities.Extensions
                     nullableType.IsPrimitive ||
                     nullableType == typeof(decimal) ||
                     nullableType == typeof(string) ||
+                    nullableType == typeof(DateTime) ||
                     nullableType.IsEnum
                 )
             );
