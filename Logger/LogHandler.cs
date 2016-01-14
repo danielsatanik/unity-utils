@@ -76,10 +76,10 @@ namespace UnityUtils.Debugging
             string cmessage;
 
             PrepareMessageText(ref message, out cmessage);
-            PrefixTimeStamp(ref message, ref cmessage);
             PostfixDeclaringType(ref message, ref cmessage);
             PostfixLogLevelInfo(ref message, ref cmessage, level);
             PostfixStackTrace(ref message, ref cmessage, level, context);
+            PrefixTimeStamp(ref message, ref cmessage);
 
             using (var file = File.AppendText(LogFilePaths[level]))
                 file.WriteLine(message);
@@ -123,6 +123,7 @@ namespace UnityUtils.Debugging
 
         void PrepareMessageText(ref string message, out string cmessage)
         {
+            message = message.TrimStart(' ');
             cmessage = string.Copy(message) + Styles.Text;
         }
 

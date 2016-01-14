@@ -107,7 +107,7 @@ namespace UnityUtils.Debugging
             Styles.ListValue.Bold = false;
 
 
-            ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
+            ColorUtility.TryParseHtmlString("#F39C12FF", out c);
             Styles.LogLevel[LoggerLogLevel.Exception].Color = c;
             Styles.LogLevel[LoggerLogLevel.Exception].Bold = true;
 
