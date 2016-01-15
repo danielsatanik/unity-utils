@@ -1,10 +1,9 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using UnityUtils.Utilities.Extensions;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Linq;
+using System.Diagnostics;
+using System.Collections.Generic;
 using UnityUtils.Engine.Utilities;
+using UnityUtils.Utilities.Extensions;
 
 namespace UnityUtils.Debugging
 {
