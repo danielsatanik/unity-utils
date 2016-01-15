@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// A helper editor script for finding missing references to objects.
@@ -17,7 +18,8 @@ public class MissingReferencesFinder : MonoBehaviour
     public static void FindMissingReferencesInCurrentScene()
     {
         var sceneObjects = GetSceneObjects();
-        FindMissingReferences(EditorApplication.currentScene, sceneObjects);
+
+        FindMissingReferences(SceneManager.GetActiveScene().name, sceneObjects);
     }
 
     /// <summary>
@@ -29,7 +31,7 @@ public class MissingReferencesFinder : MonoBehaviour
     {
         foreach (var scene in EditorBuildSettings.scenes.Where(s => s.enabled))
         {
-            EditorApplication.OpenScene(scene.path);
+            SceneManager.LoadScene(SceneManager.GetSceneByPath(scene.path).name);
             FindMissingReferencesInCurrentScene();
         }
     }
@@ -102,3 +104,4 @@ public class MissingReferencesFinder : MonoBehaviour
                 : GetFullPath(go.transform.parent.gameObject) + "/" + go.name;
     }
 }
+#endif

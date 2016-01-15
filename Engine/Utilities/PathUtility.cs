@@ -19,9 +19,7 @@ namespace UnityUtils.Engine.Utilities
             if (string.IsNullOrEmpty(path))
                 throw new System.Exception("Path has to be a valid pathname");
 
-            #if UNITY_IOS
             Directory.CreateDirectory(path);
-            #endif
 
             return path;
         }
