@@ -7,16 +7,16 @@ namespace UnityUtils.Engine.Attributes
     {
         public bool PlayModeOnly { get; set; }
 
-        public string Name { get; set; }
+        public string FunctionName { get; set; }
 
         public string ButtonName { get; set; }
 
-        public ButtonAttribute(bool playModeOnly, string name, string buttonName = null)
+        public ButtonAttribute(bool playModeOnly, string functionName, string buttonName = null)
         {
             PlayModeOnly = playModeOnly;
-            Name = name;
+            FunctionName = functionName;
             if (buttonName == null)
-                buttonName = name;
+                buttonName = functionName;
             ButtonName = buttonName;
         }
     }

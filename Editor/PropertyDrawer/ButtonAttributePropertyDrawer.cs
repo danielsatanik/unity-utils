@@ -23,10 +23,10 @@ namespace UnityUtils.Editor.PropertyDrawers
             var field = ownerType.GetField(property.name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             var fieldName = field.Name;
 
-            if (attrib.Name != null)
+            if (attrib.FunctionName != null)
             {
                 if (_eventMethodInfo == null)
-                    _eventMethodInfo = ownerType.GetMethod(attrib.Name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    _eventMethodInfo = ownerType.GetMethod(attrib.FunctionName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
                 if (_eventMethodInfo != null)
                 {
@@ -47,7 +47,7 @@ namespace UnityUtils.Editor.PropertyDrawers
                         Debug.LogWarningFormat("Field {0}.{1} has to be of type bool", ownerName, fieldName);
                 }
                 else
-                    Debug.LogWarningFormat("The function {0} for the field {1}.{2} has to exist", attrib.Name, ownerName, fieldName);
+                    Debug.LogWarningFormat("The function {0} for the field {1}.{2} has to exist", attrib.FunctionName, ownerName, fieldName);
             }
             else
                 Debug.LogWarningFormat("Field's ({0}.{1}) ButtonAttribute has to have a not-null name", ownerName, fieldName);
