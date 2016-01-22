@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace UnityUtils.Utilities.Extensions
 {
@@ -16,12 +17,17 @@ namespace UnityUtils.Utilities.Extensions
 
         public static string ToKebabCase(this string str)
         {
-            return ToDelimiterCase(str, "-");
+            return ToDelimiterCase(str, "-").ToLower();
         }
 
         public static string ToSnakeCase(this string str)
         {
             return ToDelimiterCase(str, "_");
+        }
+
+        public static bool IEquals(this string str1, string str2)
+        {
+            return string.Equals(str1, str2, StringComparison.CurrentCultureIgnoreCase);
         }
     }
 }

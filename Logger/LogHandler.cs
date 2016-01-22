@@ -123,7 +123,7 @@ namespace UnityUtils.Debugging
         void PrepareMessageText(ref string message, out string cmessage)
         {
             message = message.TrimStart(' ');
-            cmessage = string.Copy(message) + Styles.Text;
+            cmessage = string.Join("\n", string.Copy(message).Split('\n').ToList().Select(s => s + Styles.Text).ToArray());
         }
 
         void PrefixTimeStamp(ref string message, ref string cmessage)
