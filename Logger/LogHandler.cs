@@ -69,15 +69,19 @@ namespace UnityUtils.Debugging
 
         public void LogFormat(UnityEngine.LogType logType, UnityEngine.Object context, string format, params object[] args)
         {
+            int stackDepth = 4;
+            if (logType == UnityEngine.LogType.Exception)
+                stackDepth++;
+
             var level = logType.Cast();
 
             string message = string.Format(format, args);
             string cmessage;
 
             PrepareMessageText(ref message, out cmessage);
-            PostfixDeclaringType(ref message, ref cmessage);
+            PostfixDeclaringType(ref message, ref cmessage, stackDepth);
             PostfixLogLevelInfo(ref message, ref cmessage, level);
-            PostfixStackTrace(ref message, ref cmessage, level, context);
+            PostfixStackTrace(ref message, ref cmessage, level, context, stackDepth);
             PrefixTimeStamp(ref message, ref cmessage);
 
             using (var file = File.AppendText(LogFilePaths[level]))
@@ -131,17 +135,17 @@ namespace UnityUtils.Debugging
             if (AddTimeStamp)
             {
                 var now = string.Format("{0:H:mm:ss.fff}", System.DateTime.Now);
-                message = "[" + now + "]" + message;
+                message = "[" + now + "] " + message;
                 cmessage =
                     ("[" + Styles.Brackets) +
                 (now + Styles.Timestamp) +
-                ("]" + Styles.Brackets) + cmessage;
+                ("] " + Styles.Brackets) + cmessage;
             }
         }
 
-        void PostfixDeclaringType(ref string message, ref string cmessage)
+        void PostfixDeclaringType(ref string message, ref string cmessage, int depth)
         {
-            var type = new StackTrace().GetFrame(4).GetMethod().DeclaringType;
+            var type = new StackTrace().GetFrame(depth + 1).GetMethod().DeclaringType;
             if (type.DeclaringType != null)
                 type = type.DeclaringType;
 
@@ -152,19 +156,23 @@ namespace UnityUtils.Debugging
         void PostfixLogLevelInfo(ref string message, ref string cmessage, LoggerLogLevel level)
         {
             var logName = level.ToString().ToUpper();
-            message = " [" + logName + "] " + message;
-            cmessage = (" [" + logName + "] " + Styles.LogLevel[level]) + cmessage;
+            message = "[" + logName + "] " + message;
+            cmessage = ("[" + logName + "] " + Styles.LogLevel[level]) + cmessage;
         }
 
-        void PostfixStackTrace(ref string message, ref string cmessage, LoggerLogLevel level, UnityEngine.Object context)
+        void PostfixStackTrace(ref string message, ref string cmessage, LoggerLogLevel level, UnityEngine.Object context, int depth)
         {
             if (level != LoggerLogLevel.Exception)
             {
                 var myTrace = new StackTrace(true);
-                StackFrame myFrame = myTrace.GetFrame(5);
-                var filename = myFrame.GetFileName().Replace(UnityEngine.Application.dataPath + "/", "");
+                StackFrame myFrame = myTrace.GetFrame(depth + 1);
+                var filename = myFrame.GetFileName();
+                if (filename != null)
+                    filename = myFrame.GetFileName().Replace(UnityEngine.Application.dataPath + "/", "");
+                else
+                    filename = "<filename unknown>";
                 var ns = myFrame.GetMethod().DeclaringType.Namespace;
-                var methodname = myFrame.GetMethod().DeclaringType.Name + "." + myFrame.GetMethod().ToString().Split(' ')[1];
+                var methodname = myFrame.GetMethod().DeclaringType.Name + "." + myFrame.GetMethod().ToString().Split(new []{ ' ' }, 2)[1];
                 var linenumber = myFrame.GetFileLineNumber();
 
                 message += string.Format("\n{0}{1}\n{2}{3}\n{4}{5}\n{6}{7}",

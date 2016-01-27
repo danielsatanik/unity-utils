@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System;
 
 namespace UnityUtils.Debugging
 {
+    [Obsolete("Use UnityEngine.Debug.Log instead")]
     public static class Logger
     {
         #region public interface

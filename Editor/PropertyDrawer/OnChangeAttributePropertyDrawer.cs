@@ -1,25 +1,25 @@
 ﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
-using UnityUtils.Engine.Attributes;
+using UnityUtils.Attributes;
 using System.Reflection;
 
 namespace UnityUtils.Editor.PropertyDrawers
 {
-    [CustomPropertyDrawer(typeof(ButtonAttribute))]
-    public class ButtonAttributePropertyDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(OnChangeAttribute))]
+    public class OnChangeAttributePropertyDrawer : PropertyDrawer
     {
-        MethodInfo _eventMethodInfo = null;
+        object _val;
+        MethodInfo _eventMethodInfo;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var attrib = attribute as ButtonAttribute;
+            var attrib = attribute as OnChangeAttribute;
 
             var ownerType = property.serializedObject.targetObject.GetType();
             var ownerName = ownerType.FullName;
 
-            var field = ownerType.GetField(property.name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            var fieldName = field.Name;
+            var fieldName = fieldInfo.Name;
 
             if (attrib.FunctionName != null)
             {
@@ -28,21 +28,17 @@ namespace UnityUtils.Editor.PropertyDrawers
 
                 if (_eventMethodInfo != null)
                 {
-                    if (property.propertyType == SerializedPropertyType.Boolean)
+                    if (Application.isPlaying ^ attrib.PlayModeOnly)
+                        GUI.enabled = false;
+                    EditorGUI.PropertyField(position, property, label);
+                    var temp = fieldInfo.GetValue(property.serializedObject.targetObject);
+                    if (_val != temp)
                     {
-                        if (Application.isPlaying ^ attrib.PlayModeOnly)
-                            GUI.enabled = false;
-                        EditorGUI.BeginProperty(position, label, property);
-                        if (GUI.Button(position, attrib.ButtonName))
-                        {
-                            _eventMethodInfo.Invoke(property.serializedObject.targetObject, null);
-                        }
-                        EditorGUI.EndProperty();
-                        GUI.enabled = true;
-                        return;
+                        _eventMethodInfo.Invoke(property.serializedObject.targetObject, null);
+                        _val = temp;
                     }
-                    else
-                        Debug.LogWarningFormat("Field {0}.{1} has to be of type bool", ownerName, fieldName);
+                    GUI.enabled = true;
+                    return;
                 }
                 else
                     Debug.LogWarningFormat("The function {0} for the field {1}.{2} has to exist", attrib.FunctionName, ownerName, fieldName);

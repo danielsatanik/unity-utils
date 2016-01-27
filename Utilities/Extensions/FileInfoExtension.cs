@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using System.IO.Compression;
+using Unity.IO.Compression;
 
 namespace UnityUtils.Utilities.Extensions
 {
