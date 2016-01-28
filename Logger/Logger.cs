@@ -3,7 +3,7 @@ using System;
 
 namespace UnityUtils.Debugging
 {
-    [Obsolete("Use UnityEngine.Debug.Log instead")]
+    [Obsolete("Use UnityEngine.Debug.Log instead", true)]
     public static class Logger
     {
         #region public interface

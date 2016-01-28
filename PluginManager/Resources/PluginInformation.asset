@@ -8,10 +8,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6d52872e5950451f90d7b2b4b03e671, type: 3}
+  m_Script: {fileID: 11500000, guid: 90a507a93f1304bbd90a34bf9e5bc042, type: 3}
   m_Name: PluginInformation
   m_EditorClassIdentifier: 
-  Title: 41424f55540a554e495459205554494c53
-  Version: 302e302e303032
+  Title: 'ABOUT
+
+    UNITY UTILS'
+  Version: 0.0.002
   KeepCorrectDirectory: 1
-  BottomBox: 44616e69656c20536174616e696b2c204253630a687474703a2f2f706f7274666f6c696f2e736174616e696b2e6174
+  BottomBox: 'Daniel Satanik, BSc
+
+    http://portfolio.satanik.at'

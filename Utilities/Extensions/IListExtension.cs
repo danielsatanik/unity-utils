@@ -42,7 +42,7 @@ namespace UnityUtils.Utilities.Extensions
                     res = string.Join(",\n", new [] { res, list[i].ToString() });
             }
 
-            return string.Format("{{{0}}}", res);
+            return string.Format("{{\n{0}\n}}", res);
         }
     }
 
