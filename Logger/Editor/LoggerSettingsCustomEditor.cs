@@ -97,10 +97,25 @@ namespace UnityUtils.Debugging.Editor
             var i = 0;
             foreach (var pair in _settings.Styles.LogLevel)
             {
-                if (i++ % 2 == 0)
-                    EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.DarkBackground);
+                if (EditorGUIUtility.isProSkin)
+                {
+                    if (i == 1)
+                        EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.DarkSelectedBackground);
+                    else if (i % 2 == 0)
+                        EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.DarkBackground);
+                    else
+                        EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.VeryDarkBackground);
+                }
                 else
-                    EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.LightBackground);
+                {
+                    if (i == 1)
+                        EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.LightSelectedBackground);
+                    else if (i % 2 == 0)
+                        EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.LightBackground);
+                    else
+                        EditorGUILayout.BeginHorizontal(UnityUtils.Engine.UI.EditorStyles.VeryLightBackground);
+                }
+                i++;
                 EditorGUILayout.LabelField(
                     C("[", _settings.Styles.Brackets) +
                     C("12:29:08.028", _settings.Styles.Timestamp) +

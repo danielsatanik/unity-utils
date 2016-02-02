@@ -51,13 +51,27 @@ namespace UnityUtils.Engine.UI
             }
         }
 
+        public static GUIStyle VeryLightBackground
+        {
+            get
+            {
+                GUIStyle s = new GUIStyle();
+                Color color;
+                if (!ColorUtility.TryParseHtmlString("#DEDEDE", out color))
+                    color = Color.blue;
+                s.normal.background = MakeTex(9999, 40, color);
+                s.clipping = TextClipping.Clip;
+                return s;
+            }
+        }
+
         public static GUIStyle LightBackground
         {
             get
             {
                 GUIStyle s = new GUIStyle();
                 Color color;
-                if (!ColorUtility.TryParseHtmlString("#3C3C3C", out color))
+                if (!ColorUtility.TryParseHtmlString("#D8D8D8", out color))
                     color = Color.blue;
                 s.normal.background = MakeTex(9999, 40, color);
                 s.clipping = TextClipping.Clip;
@@ -71,7 +85,7 @@ namespace UnityUtils.Engine.UI
             {
                 GUIStyle s = new GUIStyle();
                 Color color;
-                if (!ColorUtility.TryParseHtmlString("#383838", out color))
+                if (!ColorUtility.TryParseHtmlString("#3C3C3C", out color))
                     color = Color.blue;
                 s.normal.background = MakeTex(9999, 40, color);
                 s.clipping = TextClipping.Clip;
@@ -85,7 +99,37 @@ namespace UnityUtils.Engine.UI
             {
                 GUIStyle s = new GUIStyle();
                 Color color;
-                if (!ColorUtility.TryParseHtmlString("#282828", out color))
+                if (!ColorUtility.TryParseHtmlString("#383838", out color))
+                    color = Color.blue;
+                s.padding = new RectOffset(2, 2, 2, 2);
+                s.clipping = TextClipping.Clip;
+                s.normal.background = MakeTex(9999, 40, color);
+                return s;
+            }
+        }
+
+        public static GUIStyle LightSelectedBackground
+        {
+            get
+            {
+                GUIStyle s = new GUIStyle();
+                Color color;
+                if (!ColorUtility.TryParseHtmlString("#397AEA", out color))
+                    color = Color.blue;
+                s.padding = new RectOffset(2, 2, 2, 2);
+                s.clipping = TextClipping.Clip;
+                s.normal.background = MakeTex(9999, 40, color);
+                return s;
+            }
+        }
+
+        public static GUIStyle DarkSelectedBackground
+        {
+            get
+            {
+                GUIStyle s = new GUIStyle();
+                Color color;
+                if (!ColorUtility.TryParseHtmlString("#3D5E98", out color))
                     color = Color.blue;
                 s.padding = new RectOffset(2, 2, 2, 2);
                 s.clipping = TextClipping.Clip;

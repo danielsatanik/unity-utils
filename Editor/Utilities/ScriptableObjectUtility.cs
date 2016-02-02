@@ -53,9 +53,7 @@ namespace UnityUtils.Editor.Utilities
 
         public static void ShowAsset<T>(string path) where T : ScriptableObject
         {
-            var obj =
-                AssetDatabase.LoadAssetAtPath<T>(path + "/" + typeof(T).Name + ".asset") ??
-                CreateAsset<T>(path);
+            var obj = CreateAssetSafe<T>(path);
 
             EditorUtility.FocusProjectWindow();
             Selection.activeObject = obj;

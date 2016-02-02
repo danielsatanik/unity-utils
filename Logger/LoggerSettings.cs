@@ -83,49 +83,100 @@ namespace UnityUtils.Debugging
 
         public void ResetStyle()
         {
-            Color c;
-            ColorUtility.TryParseHtmlString("#7F8C8DFF", out c);
-            Styles.Brackets.Color = c;
-            Styles.Brackets.Bold = false;
-            Styles.Timestamp.Color = c;
-            Styles.Timestamp.Bold = false;
+            #if UNITY_EDITOR
+            if (UnityEditor.EditorGUIUtility.isProSkin)
+            {
+                Color c;
+                ColorUtility.TryParseHtmlString("#7F8C8DFF", out c);
+                Styles.Brackets.Color = c;
+                Styles.Brackets.Bold = false;
+                Styles.Timestamp.Color = c;
+                Styles.Timestamp.Bold = false;
 
-            ColorUtility.TryParseHtmlString("#27AE60FF", out c);
-            Styles.Type.Color = c;
-            Styles.Type.Bold = true;
+                ColorUtility.TryParseHtmlString("#27AE60FF", out c);
+                Styles.Type.Color = c;
+                Styles.Type.Bold = true;
 
-            ColorUtility.TryParseHtmlString("#ECF0F1FF", out c);
-            Styles.Text.Color = c;
-            Styles.Text.Bold = false;
+                ColorUtility.TryParseHtmlString("#ECF0F1FF", out c);
+                Styles.Text.Color = c;
+                Styles.Text.Bold = false;
 
-            ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
-            Styles.ListKey.Color = c;
-            Styles.ListKey.Bold = false;
+                ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
+                Styles.ListKey.Color = c;
+                Styles.ListKey.Bold = false;
 
-            ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
-            Styles.ListValue.Color = c;
-            Styles.ListValue.Bold = false;
+                ColorUtility.TryParseHtmlString("#BDC3C7FF", out c);
+                Styles.ListValue.Color = c;
+                Styles.ListValue.Bold = false;
 
 
-            ColorUtility.TryParseHtmlString("#F39C12FF", out c);
-            Styles.LogLevel[LoggerLogLevel.Exception].Color = c;
-            Styles.LogLevel[LoggerLogLevel.Exception].Bold = true;
+                ColorUtility.TryParseHtmlString("#3498DBFF", out c);
+                Styles.LogLevel[LoggerLogLevel.Info].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Info].Bold = true;
 
-            ColorUtility.TryParseHtmlString("#3498DBFF", out c);
-            Styles.LogLevel[LoggerLogLevel.Info].Color = c;
-            Styles.LogLevel[LoggerLogLevel.Info].Bold = true;
+                ColorUtility.TryParseHtmlString("#F1C40FFF", out c);
+                Styles.LogLevel[LoggerLogLevel.Warn].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Warn].Bold = true;
 
-            ColorUtility.TryParseHtmlString("#F1C40FFF", out c);
-            Styles.LogLevel[LoggerLogLevel.Warn].Color = c;
-            Styles.LogLevel[LoggerLogLevel.Warn].Bold = true;
+                ColorUtility.TryParseHtmlString("#C0392BFF", out c);
+                Styles.LogLevel[LoggerLogLevel.Error].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Error].Bold = true;
 
-            ColorUtility.TryParseHtmlString("#C0392BFF", out c);
-            Styles.LogLevel[LoggerLogLevel.Error].Color = c;
-            Styles.LogLevel[LoggerLogLevel.Error].Bold = true;
+                ColorUtility.TryParseHtmlString("#FF5342FF", out c);
+                Styles.LogLevel[LoggerLogLevel.Assert].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Assert].Bold = true;
 
-            ColorUtility.TryParseHtmlString("#FF5342FF", out c);
-            Styles.LogLevel[LoggerLogLevel.Assert].Color = c;
-            Styles.LogLevel[LoggerLogLevel.Assert].Bold = true;
+                ColorUtility.TryParseHtmlString("#F39C12FF", out c);
+                Styles.LogLevel[LoggerLogLevel.Exception].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Exception].Bold = true;
+            }
+            else
+            {
+                Color c;
+                ColorUtility.TryParseHtmlString("#27AE60FF", out c);
+                Styles.Brackets.Color = c;
+                Styles.Brackets.Bold = true;
+                Styles.Timestamp.Color = c;
+                Styles.Timestamp.Bold = true;
+
+                ColorUtility.TryParseHtmlString("#16A085FF", out c);
+                Styles.Type.Color = c;
+                Styles.Type.Bold = true;
+
+                ColorUtility.TryParseHtmlString("#2C3E50FF", out c);
+                Styles.Text.Color = c;
+                Styles.Text.Bold = false;
+
+                ColorUtility.TryParseHtmlString("#2C3E50FF", out c);
+                Styles.ListKey.Color = c;
+                Styles.ListKey.Bold = false;
+
+                ColorUtility.TryParseHtmlString("#2C3E50FF", out c);
+                Styles.ListValue.Color = c;
+                Styles.ListValue.Bold = true;
+
+
+                ColorUtility.TryParseHtmlString("#3498DBFF", out c);
+                Styles.LogLevel[LoggerLogLevel.Info].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Info].Bold = true;
+
+                ColorUtility.TryParseHtmlString("#F1C40FFF", out c);
+                Styles.LogLevel[LoggerLogLevel.Warn].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Warn].Bold = true;
+
+                ColorUtility.TryParseHtmlString("#C0392BFF", out c);
+                Styles.LogLevel[LoggerLogLevel.Error].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Error].Bold = true;
+
+                ColorUtility.TryParseHtmlString("#8E44ADFF", out c);
+                Styles.LogLevel[LoggerLogLevel.Assert].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Assert].Bold = true;
+
+                ColorUtility.TryParseHtmlString("#8E44ADFF", out c);
+                Styles.LogLevel[LoggerLogLevel.Exception].Color = c;
+                Styles.LogLevel[LoggerLogLevel.Exception].Bold = true;
+            }
+            #endif
         }
     }
 }
