@@ -193,6 +193,7 @@ namespace UnityUtils.Debugging
             else
             {
                 message += "\n" + ((ExceptionContext)context).Exception.StackTrace;
+                // TODO: Color message
                 cmessage += "\n" + ((ExceptionContext)context).Exception.StackTrace;
             }
         }
