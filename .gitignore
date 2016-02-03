@@ -1,3 +1,51 @@
-*.meta
+# =============== #
+# Unity generated #
+# =============== #
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uilds/
+/[Ll]ogs/
+ProjectVersion.txt
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+/*.csproj
+/*.unityproj
+/*.booproj
+/*.sln
+/*.suo
+/*.user
+/*.userprefs
+/*.pidb
+/*.svd
+UnityVS/
+UnityVS.*
+build_info.txt
+**/[Bb]in
+**/[Oo]bj
+
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 *.swp
+
+# ================ #
+# Other #
+# ================ #
+
+# blender backup file
+*.blend1
+*.blend1.meta
+Icons.meta
+
 LoggerSettings.asset
