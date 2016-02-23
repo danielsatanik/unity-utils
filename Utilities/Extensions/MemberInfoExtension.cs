@@ -52,7 +52,7 @@ namespace UnityUtils.Utilities.Extensions
         {
             if (mi is PropertyInfo)
                 (mi as PropertyInfo).SetValue(obj, value, null);
-            else
+            else if (mi is FieldInfo)
                 (mi as FieldInfo).SetValue(obj, value);
         }
 
@@ -60,16 +60,18 @@ namespace UnityUtils.Utilities.Extensions
         {
             if (mi is PropertyInfo)
                 return (mi as PropertyInfo).GetValue(obj, null);
-            else
+            else if (mi is FieldInfo)
                 return (mi as FieldInfo).GetValue(obj);
+            return null;
         }
 
         public static Type GetMemberType(this MemberInfo mi)
         {
             if (mi is PropertyInfo)
                 return (mi as PropertyInfo).PropertyType;
-            else
+            else if (mi is FieldInfo)
                 return (mi as FieldInfo).FieldType;
+            return null;
         }
 
         public static MemberInfo[] Members<T>(this MemberInfo mi) where T : class
