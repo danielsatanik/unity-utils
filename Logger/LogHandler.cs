@@ -86,7 +86,7 @@ namespace UnityUtils.Debugging
 
             using (var file = File.AppendText(LogFilePaths[level]))
                 file.WriteLine(message);
-            
+
             LogRotate(level);
 
             if (EchoToConsole && (LogLevel & level) > 0)
@@ -97,7 +97,7 @@ namespace UnityUtils.Debugging
                 _defaultLogHandler.LogFormat(logType, context, @cmessage);
             }
 
-            #if DEBUG || PROFILE
+#if DEBUG || PROFILE
             if (level == LoggerLogLevel.Assert || level == LoggerLogLevel.Exception)
             {
                 if (BreakOnAssert)
@@ -107,7 +107,7 @@ namespace UnityUtils.Debugging
             {
                 UnityEngine.Debug.Break();
             }
-            #endif
+#endif
         }
 
         public virtual void LogException(System.Exception exception, UnityEngine.Object context)
@@ -145,12 +145,16 @@ namespace UnityUtils.Debugging
 
         void PostfixDeclaringType(ref string message, ref string cmessage, int depth)
         {
-            var type = new StackTrace().GetFrame(depth + 1).GetMethod().DeclaringType;
-            if (type.DeclaringType != null)
-                type = type.DeclaringType;
+            var stackFrame = new StackTrace().GetFrame(depth + 1);
+            if (stackFrame != null)
+            {
+                var type = stackFrame.GetMethod().DeclaringType;
+                if (type.DeclaringType != null)
+                    type = type.DeclaringType;
 
-            message = type.Name + ": " + message;
-            cmessage = (type.Name + ": " + Styles.Type) + cmessage;
+                message = type.Name + ": " + message;
+                cmessage = (type.Name + ": " + Styles.Type) + cmessage;
+            }
         }
 
         void PostfixLogLevelInfo(ref string message, ref string cmessage, LoggerLogLevel level)
@@ -166,29 +170,32 @@ namespace UnityUtils.Debugging
             {
                 var myTrace = new StackTrace(true);
                 StackFrame myFrame = myTrace.GetFrame(depth + 1);
-                var filename = myFrame.GetFileName();
-                if (filename != null)
-                    filename = myFrame.GetFileName().Replace(UnityEngine.Application.dataPath + "/", "");
-                else
-                    filename = "<filename unknown>";
-                var ns = myFrame.GetMethod().DeclaringType.Namespace;
-                var methodname = myFrame.GetMethod().DeclaringType.Name + "." + myFrame.GetMethod().ToString().Split(new []{ ' ' }, 2)[1];
-                var linenumber = myFrame.GetFileLineNumber();
+                if (myFrame != null)
+                {
+                    var filename = myFrame.GetFileName();
+                    if (filename != null)
+                        filename = myFrame.GetFileName().Replace(UnityEngine.Application.dataPath + "/", "");
+                    else
+                        filename = "<filename unknown>";
+                    var ns = myFrame.GetMethod().DeclaringType.Namespace;
+                    var methodname = myFrame.GetMethod().DeclaringType.Name + "." + myFrame.GetMethod().ToString().Split(new[] { ' ' }, 2)[1];
+                    var linenumber = myFrame.GetFileLineNumber();
 
-                message += string.Format("\n{0}{1}\n{2}{3}\n{4}{5}\n{6}{7}",
-                    "Filename: ", filename,
-                    "Namespace: ", ns,
-                    "Method: ", methodname,
-                    "Line: ", linenumber);
+                    message += string.Format("\n{0}{1}\n{2}{3}\n{4}{5}\n{6}{7}",
+                        "Filename: ", filename,
+                        "Namespace: ", ns,
+                        "Method: ", methodname,
+                        "Line: ", linenumber);
 
-                var keyStyle = Styles.ListKey;
-                var valStyle = Styles.ListValue;
+                    var keyStyle = Styles.ListKey;
+                    var valStyle = Styles.ListValue;
 
-                cmessage += string.Format("\n{0}{1}\n{2}{3}\n{4}{5}\n{6}{7}",
-                    "Filename: " + keyStyle, filename + valStyle,
-                    "Namespace: " + keyStyle, ns + valStyle,
-                    "Method: " + keyStyle, methodname + valStyle,
-                    "Line: " + keyStyle, (linenumber + "") + valStyle);
+                    cmessage += string.Format("\n{0}{1}\n{2}{3}\n{4}{5}\n{6}{7}",
+                        "Filename: " + keyStyle, filename + valStyle,
+                        "Namespace: " + keyStyle, ns + valStyle,
+                        "Method: " + keyStyle, methodname + valStyle,
+                        "Line: " + keyStyle, (linenumber + "") + valStyle);
+                }
             }
             else
             {
