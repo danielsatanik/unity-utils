@@ -94,7 +94,12 @@ namespace UnityUtils.Debugging
                 cmessage = cmessage.Replace("{", "{{").Replace("}", "}}");
                 if (logType == UnityEngine.LogType.Exception)
                     logType = UnityEngine.LogType.Error;
+#if UNITY_EDITOR
                 _defaultLogHandler.LogFormat(logType, context, @cmessage);
+#else
+                _defaultLogHandler.LogFormat(logType, context, @message);
+#endif
+
             }
 
 #if DEBUG || PROFILE
@@ -122,7 +127,7 @@ namespace UnityUtils.Debugging
             }
         }
 
-        #region helper
+#region helper
 
         void PrepareMessageText(ref string message, out string cmessage)
         {
@@ -218,6 +223,6 @@ namespace UnityUtils.Debugging
             }
         }
 
-        #endregion // helper
+#endregion // helper
     }
 }
