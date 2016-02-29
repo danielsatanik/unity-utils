@@ -15,6 +15,12 @@ namespace UnityUtils.Utilities.Extensions
             return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str);
         }
 
+        public static string ToPascalCase(this string str, char delimiter)
+        {
+            var parts = str.Split(delimiter);
+            return string.Join(string.Empty, parts.Select(s => s.ToTitleCase()).ToArray());
+        }
+
         public static string ToKebabCase(this string str)
         {
             return ToDelimiterCase(str, "-").ToLower();
