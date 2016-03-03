@@ -6,9 +6,11 @@
         static void OnRuntimeMethodLoad()
         {
             #if !UNITY_EDITOR
-                var defaultLoggerHandler = UnityEngine.Debug.logger.logHandler;
+            var defaultLoggerHandler = UnityEngine.Debug.logger.logHandler;
 
-                UnityEngine.Debug.logger.logHandler = new LogHandler(defaultLoggerHandler);
+            UnityEngine.Debug.logger.logHandler = new LogHandler(defaultLoggerHandler);
+
+            System.Console.SetOut(new LogWriter());
             #endif
         }
     }

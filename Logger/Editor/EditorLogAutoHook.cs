@@ -9,6 +9,8 @@ namespace UnityUtils.Debugging.Editor
             var defaultLoggerHandler = UnityEngine.Debug.logger.logHandler;
 
             UnityEngine.Debug.logger.logHandler = new EditorLogHandler(defaultLoggerHandler);
+
+            System.Console.SetOut(new LogWriter());
         }
     }
 }
