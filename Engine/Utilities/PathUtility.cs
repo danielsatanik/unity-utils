@@ -3,15 +3,30 @@ using UnityEngine;
 
 namespace UnityUtils.Engine.Utilities
 {
+    #if UNITY_EDITOR
+    [UnityEditor.InitializeOnLoad]
+    #endif
     public static class PathUtility
     {
 
         public static string ProjectRootPath { get; private set; }
 
+        public static string UnityApplicationPath { get; private set; }
+
+        #if UNITY_EDITOR
         static PathUtility()
         {
             ProjectRootPath = CreateProjectRootPath();
+            UnityApplicationPath = Application.dataPath;
         }
+        #else
+        [RuntimeInitializeOnLoadMethod]
+        static void Initialize()
+        {
+            ProjectRootPath = CreateProjectRootPath();
+            UnityApplicationPath = Application.dataPath;
+        }
+        #endif
 
         public static string GetPath(params string[] paths)
         {

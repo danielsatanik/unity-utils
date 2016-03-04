@@ -84,8 +84,23 @@ namespace UnityUtils.Debugging
             PostfixStackTrace(ref message, ref cmessage, level, context, stackDepth);
             PrefixTimeStamp(ref message, ref cmessage);
 
-            using (var file = File.AppendText(LogFilePaths[level]))
-                file.WriteLine(message);
+            int logtrys = 5;
+            bool logSuccess = false;
+            while (logtrys > 0 && !logSuccess)
+            {
+                try
+                {
+                    using (var file = File.AppendText(LogFilePaths[level]))
+                        file.WriteLine(message);
+                    logSuccess = true;
+                }
+                catch (IOException)
+                {
+                    // cannot log here
+                    System.Threading.Thread.Sleep(50);
+                    logtrys--;
+                }
+            }
 
             LogRotate(level);
 
@@ -127,7 +142,7 @@ namespace UnityUtils.Debugging
             }
         }
 
-#region helper
+        #region helper
 
         void PrepareMessageText(ref string message, out string cmessage)
         {
@@ -179,7 +194,7 @@ namespace UnityUtils.Debugging
                 {
                     var filename = myFrame.GetFileName();
                     if (filename != null)
-                        filename = myFrame.GetFileName().Replace(UnityEngine.Application.dataPath + "/", "");
+                        filename = myFrame.GetFileName().Replace(PathUtility.UnityApplicationPath + "/", "");
                     else
                         filename = "<filename unknown>";
                     var ns = myFrame.GetMethod().DeclaringType.Namespace;
@@ -223,6 +238,6 @@ namespace UnityUtils.Debugging
             }
         }
 
-#endregion // helper
+        #endregion // helper
     }
 }
