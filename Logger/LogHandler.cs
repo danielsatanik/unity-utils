@@ -14,6 +14,7 @@ namespace UnityUtils.Debugging
             public System.Exception Exception { get; set; }
         }
 
+        static readonly object _locker = new object();
         readonly UnityEngine.ILogHandler _defaultLogHandler;
         string _customLogfilePrefix;
         Dictionary<LoggerLogLevel, string> _logFilePaths;
@@ -84,22 +85,10 @@ namespace UnityUtils.Debugging
             PostfixStackTrace(ref message, ref cmessage, level, context, stackDepth);
             PrefixTimeStamp(ref message, ref cmessage);
 
-            int logtrys = 5;
-            bool logSuccess = false;
-            while (logtrys > 0 && !logSuccess)
+            lock (_locker)
             {
-                try
-                {
-                    using (var file = File.AppendText(LogFilePaths[level]))
-                        file.WriteLine(message);
-                    logSuccess = true;
-                }
-                catch (IOException)
-                {
-                    // cannot log here
-                    System.Threading.Thread.Sleep(50);
-                    logtrys--;
-                }
+                using (var file = File.AppendText(LogFilePaths[level]))
+                    file.WriteLine(message);
             }
 
             LogRotate(level);
