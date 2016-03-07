@@ -11,6 +11,7 @@
             UnityEngine.Debug.logger.logHandler = new LogHandler(defaultLoggerHandler);
 
             System.Console.SetOut(new LogWriter());
+            System.Console.SetError(new LogWriter());
             #endif
         }
     }
