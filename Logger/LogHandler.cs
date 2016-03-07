@@ -143,7 +143,7 @@ namespace UnityUtils.Debugging
         {
             if (AddTimeStamp)
             {
-                var now = string.Format("{0:H:mm:ss.fff}", System.DateTime.Now);
+                var now = string.Format("{0:yy-MM-dd H:mm:ss.fff}", System.DateTime.Now);
                 message = "[" + now + "] " + message;
                 cmessage =
                     ("[" + Styles.Brackets) +

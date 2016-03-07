@@ -118,7 +118,7 @@ namespace UnityUtils.Debugging.Editor
                 i++;
                 EditorGUILayout.LabelField(
                     C("[", _settings.Styles.Brackets) +
-                    C("12:29:08.028", _settings.Styles.Timestamp) +
+                    C("16-02-18 12:29:08.028", _settings.Styles.Timestamp) +
                     C("]", _settings.Styles.Brackets) +
                     C(" [" + pair.Key.ToString().ToUpper() + "] ", pair.Value) +
                     C("ExampleClass: ", _settings.Styles.Type) +
