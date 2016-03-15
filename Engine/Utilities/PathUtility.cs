@@ -13,20 +13,13 @@ namespace UnityUtils.Engine.Utilities
 
         public static string UnityApplicationPath { get; private set; }
 
-        #if UNITY_EDITOR
+        public static string Blub { get; private set; }
+
         static PathUtility()
         {
             ProjectRootPath = CreateProjectRootPath();
             UnityApplicationPath = Application.dataPath;
         }
-        #else
-        [RuntimeInitializeOnLoadMethod]
-        static void Initialize()
-        {
-            ProjectRootPath = CreateProjectRootPath();
-            UnityApplicationPath = Application.dataPath;
-        }
-        #endif
 
         public static string GetPath(params string[] paths)
         {
@@ -51,7 +44,7 @@ namespace UnityUtils.Engine.Utilities
             #elif UNITY_IOS
             path = Application.persistentDataPath;
             #else
-            path = Application.dataPath +"/";
+            path = Application.persistentDataPath;
             #endif
 
             return path;
